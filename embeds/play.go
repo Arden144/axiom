@@ -7,7 +7,7 @@ import (
 	"github.com/disgoorg/disgolink/lavalink"
 )
 
-func PlayEmbed(track lavalink.AudioTrackInfo) discord.Embed {
+func Play(track lavalink.AudioTrackInfo) discord.Embed {
 	embed := discord.NewEmbedBuilder()
 	embed.SetTitle(track.Title)
 	embed.SetThumbnail(fmt.Sprintf("https://img.youtube.com/vi/%v/default.jpg", track.Identifier))
