@@ -7,15 +7,7 @@ import (
 	"github.com/arden144/axiom/bot"
 	"github.com/arden144/axiom/music"
 	"github.com/disgoorg/disgo/discord"
-	"github.com/disgoorg/snowflake/v2"
 )
-
-func voiceChannelId(b *bot.Bot, guildID, userID snowflake.ID) (*snowflake.ID, bool) {
-	state, ok := b.Client.Caches().VoiceStates().GroupFindFirst(guildID, func(_ snowflake.ID, state discord.VoiceState) bool {
-		return state.UserID == userID
-	})
-	return state.ChannelID, ok
-}
 
 var Play = bot.Command{
 	Create: bot.SlashCommand{
@@ -29,28 +21,34 @@ var Play = bot.Command{
 			},
 		},
 	},
-	Handler: func(ctx context.Context, b *bot.Bot, e *bot.CommandEvent) bot.Message {
+	Handler: func(ctx context.Context, b *bot.Bot, e bot.CommandEvent) (*discord.MessageUpdate, error) {
 		song := e.SlashCommandInteractionData().String("song")
+		player := b.Music.Player(*e.GuildID())
 
-		channelID, ok := voiceChannelId(b, *e.GuildID(), e.Member().User.ID)
+		voice, ok := b.Client.Caches().VoiceStates().Get(*e.GuildID(), e.User().ID)
 		if !ok {
 			return e.Reply("Not in a voice channel")
 		}
 
-		if err := b.Client.Connect(ctx, *e.GuildID(), *channelID); err != nil {
-			fmt.Print("WARM: failed to join channel: ", err)
-			return e.Reply("failed")
+		if player.ChannelID() != voice.ChannelID {
+			if err := b.Client.Connect(ctx, *e.GuildID(), *voice.ChannelID); err != nil {
+				return e.Fatal("failed to join channel", err)
+			}
 		}
 
-		player := b.Music.Player(*e.GuildID())
-		info, err := player.Play(ctx, song)
+		tracks, err := player.Search(ctx, song)
 		if err == music.ErrNotFound {
 			return e.Reply("not found")
 		} else if err != nil {
-			fmt.Print("WARN: failed to play song: ", err)
-			return e.Reply("failed")
+			return e.Fatal("failed to search", err)
 		}
 
-		return e.Reply(fmt.Sprint("Now playing ", info.Title))
+		if player.Playing() {
+			player.Enqueue(tracks[0])
+			return e.Reply(fmt.Sprint("Queued ", tracks[0].Info().Title))
+		} else {
+			e.Fatal("failed to play", player.Play(tracks[0]))
+			return e.Reply(fmt.Sprint("Now playing ", tracks[0].Info().Title))
+		}
 	},
 }

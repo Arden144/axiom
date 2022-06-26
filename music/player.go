@@ -5,20 +5,19 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/disgoorg/disgolink/disgolink"
 	"github.com/disgoorg/disgolink/lavalink"
 )
 
 var ErrNotFound = errors.New("track not found")
 
 type Player struct {
-	link   disgolink.Link
-	player lavalink.Player
-	queue  Queue
+	lavalink.Player
+	*Queue
 }
 
-func (p *Player) Play(ctx context.Context, name string) (*lavalink.AudioTrackInfo, error) {
-	c := p.link.BestRestClient()
+func (p *Player) Search(ctx context.Context, name string) ([]lavalink.AudioTrack, error) {
+	l := p.Node().Lavalink()
+	c := l.BestRestClient()
 
 	identifier := fmt.Sprint("ytsearch:", name)
 	result, err := c.LoadItem(ctx, identifier)
@@ -28,22 +27,13 @@ func (p *Player) Play(ctx context.Context, name string) (*lavalink.AudioTrackInf
 
 	tracks := make([]lavalink.AudioTrack, len(result.Tracks))
 	for i, track := range result.Tracks {
-		tracks[i], err = p.link.DecodeTrack(track.Track)
+		tracks[i], err = l.DecodeTrack(track.Track)
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	switch result.LoadType {
-	case lavalink.LoadTypeTrackLoaded:
-		// tracks[0]
-
-	case lavalink.LoadTypePlaylistLoaded:
-		// NewAudioPlaylist(result.PlaylistInfo.Name, result.PlaylistInfo.SelectedTrack, tracks)
-
-	case lavalink.LoadTypeSearchResult:
-		// tracks
-
 	case lavalink.LoadTypeNoMatches:
 		return nil, ErrNotFound
 
@@ -51,19 +41,17 @@ func (p *Player) Play(ctx context.Context, name string) (*lavalink.AudioTrackInf
 		return nil, *result.Exception
 	}
 
-	track := tracks[0]
-	info := track.Info()
-	return &info, p.player.Play(tracks[0])
+	return tracks, nil
 }
 
-func (p *Player) AddToQueue(name string) {
-
+func (p *Player) Next() error {
+	if track, ok := p.Dequeue(); ok {
+		return p.Play(track)
+	}
+	return nil
 }
 
-func (p *Player) Pause() {
-
-}
-
-func (p *Player) Resume() {
-
+func (p *Player) Playing() bool {
+	track := p.PlayingTrack()
+	return track != nil && track.Info().Length != p.Position()
 }

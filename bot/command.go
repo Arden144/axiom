@@ -2,6 +2,7 @@ package bot
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/disgoorg/disgo/discord"
@@ -9,19 +10,30 @@ import (
 )
 
 type SlashCommand = discord.SlashCommandCreate
-type Message discord.MessageCreate
 
 type Command struct {
 	Create  SlashCommand
-	Handler func(context.Context, *Bot, *CommandEvent) Message
+	Handler func(context.Context, *Bot, CommandEvent) (*discord.MessageUpdate, error)
 }
 
 type CommandEvent struct {
 	*events.ApplicationCommandInteractionCreate
 }
 
-func (e *CommandEvent) Reply(msg string) Message {
-	return Message(discord.NewMessageCreateBuilder().SetContent(msg).Build())
+func (e *CommandEvent) Reply(content string) (*discord.MessageUpdate, error) {
+	embed := discord.NewEmbedBuilder().SetDescription(content).Build()
+	msg := discord.NewMessageUpdateBuilder().SetEmbeds(embed).Build()
+	return &msg, nil
+}
+
+func (e *CommandEvent) Fatal(msg string, err error) (*discord.MessageUpdate, error) {
+	return nil, fmt.Errorf("%s: %w", msg, err)
+
+}
+
+func (e *CommandEvent) UpdateMessage(messageUpdate discord.MessageUpdate) error {
+	_, err := e.Client().Rest().UpdateInteractionResponse(e.ApplicationID(), e.Token(), messageUpdate)
+	return err
 }
 
 func (b *Bot) ClearCommands() {
