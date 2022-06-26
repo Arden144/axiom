@@ -12,11 +12,7 @@ func main() {
 	bot.Setup()
 
 	// bot.ClearCommands()
-	bot.AddCommand(commands.Play)
-	bot.AddCommand(commands.Skip)
-	bot.AddCommand(commands.Disconnect)
-	bot.AddCommand(commands.Pause)
-	bot.AddCommand(commands.Resume)
+	bot.AddCommands(commands.Play, commands.Skip, commands.Disconnect, commands.Pause, commands.Resume)
 
 	bot.Start()
 }

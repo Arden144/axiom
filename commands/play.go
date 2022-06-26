@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/arden144/axiom/bot"
+	"github.com/arden144/axiom/embeds"
 	"github.com/arden144/axiom/music"
 	"github.com/disgoorg/disgo/discord"
 )
@@ -43,12 +44,16 @@ var Play = bot.Command{
 			return e.Fatal("failed to search", err)
 		}
 
+		track := tracks[0]
+
 		if player.Playing() {
-			player.Enqueue(tracks[0])
-			return e.Reply(fmt.Sprint("Queued ", tracks[0].Info().Title))
+			player.Enqueue(track)
+			return e.Reply(fmt.Sprint("Queued ", track.Info().Title))
 		} else {
-			e.Fatal("failed to play", player.Play(tracks[0]))
-			return e.Reply(fmt.Sprint("Now playing ", tracks[0].Info().Title))
+			if err := player.Play(track); err != nil {
+				return e.Fatal("failed to play", err)
+			}
+			return e.ReplyEmbed(embeds.Play(track.Info()))
 		}
 	},
 }
