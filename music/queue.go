@@ -10,7 +10,7 @@ type Queue struct {
 	*list.List
 }
 
-func NewQueue() Queue {
+func newQueue() Queue {
 	return Queue{list.New()}
 }
 

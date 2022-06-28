@@ -6,16 +6,16 @@ import (
 	"github.com/disgoorg/disgolink/lavalink"
 )
 
-type EventListener struct {
+type eventListener struct {
 	lavalink.PlayerEventAdapter
 	player Player
 }
 
-func NewListener(player Player) *EventListener {
-	return &EventListener{player: player}
+func newListener(player Player) *eventListener {
+	return &eventListener{player: player}
 }
 
-func (l *EventListener) OnTrackEnd(_ lavalink.Player, track lavalink.AudioTrack, endReason lavalink.AudioTrackEndReason) {
+func (l *eventListener) OnTrackEnd(_ lavalink.Player, track lavalink.AudioTrack, endReason lavalink.AudioTrackEndReason) {
 	if !endReason.MayStartNext() {
 		return
 	}

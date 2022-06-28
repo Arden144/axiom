@@ -2,7 +2,6 @@ package bot
 
 import (
 	"context"
-	"fmt"
 	"log"
 
 	"github.com/disgoorg/disgo/discord"
@@ -18,27 +17,6 @@ type Command struct {
 
 type CommandEvent struct {
 	*events.ApplicationCommandInteractionCreate
-}
-
-func (e *CommandEvent) Reply(content string) (*discord.MessageUpdate, error) {
-	embed := discord.NewEmbedBuilder().SetDescription(content).Build()
-	msg := discord.NewMessageUpdateBuilder().SetEmbeds(embed).Build()
-	return &msg, nil
-}
-
-func (e *CommandEvent) ReplyEmbed(embed discord.Embed) (*discord.MessageUpdate, error) {
-	msg := discord.NewMessageUpdateBuilder().SetEmbeds(embed).Build()
-	return &msg, nil
-}
-
-func (e *CommandEvent) Fatal(msg string, err error) (*discord.MessageUpdate, error) {
-	return nil, fmt.Errorf("%s: %w", msg, err)
-
-}
-
-func (e *CommandEvent) UpdateMessage(messageUpdate discord.MessageUpdate) error {
-	_, err := e.Client().Rest().UpdateInteractionResponse(e.ApplicationID(), e.Token(), messageUpdate)
-	return err
 }
 
 func (b *Bot) ClearCommands() {
@@ -65,16 +43,12 @@ func (b *Bot) ClearCommands() {
 	}
 }
 
-func (b *Bot) AddCommand(c Command) {
-	b.Commands[c.Create.Name()] = c
-
-	if _, err := b.Client.Rest().CreateGuildCommand(b.Client.ApplicationID(), b.Config.DevGuildID, c.Create); err != nil {
-		log.Fatal("failed to add command: ", err)
-	}
-}
-
 func (b *Bot) AddCommands(cs ...Command) {
 	for _, c := range cs {
-		b.AddCommand(c)
+		b.Commands[c.Create.Name()] = c
+
+		if _, err := b.Client.Rest().CreateGuildCommand(b.Client.ApplicationID(), b.Config.DevGuildID, c.Create); err != nil {
+			log.Fatal("failed to add command: ", err)
+		}
 	}
 }

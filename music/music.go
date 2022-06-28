@@ -29,7 +29,7 @@ func (m *Music) Connect(ctx context.Context, config lavalink.NodeConfig) error {
 func (m *Music) Player(guildID snowflake.ID) Player {
 	queue, ok := m.queues[guildID]
 	if !ok {
-		queue = NewQueue()
+		queue = newQueue()
 		m.queues[guildID] = queue
 	}
 
@@ -38,7 +38,7 @@ func (m *Music) Player(guildID snowflake.ID) Player {
 	player.Player = m.link.ExistingPlayer(guildID)
 	if player.Player == nil {
 		player.Player = m.link.Player(guildID)
-		player.AddListener(NewListener(player))
+		player.AddListener(newListener(player))
 	}
 
 	return player
