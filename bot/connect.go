@@ -17,11 +17,19 @@ func (b *Bot) connectDiscord(ctx context.Context) {
 	}
 }
 
-func (b *Bot) connectLavalink(ctx context.Context) {
+func (b *Bot) connectLavaLink(ctx context.Context) {
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
 	if err := b.Music.Connect(ctx, b.Config.Lavalink); err != nil {
 		log.Fatal("failed to add lavalink node: ", err)
 	}
+}
+
+func (b *Bot) disconnectDiscord(ctx context.Context) {
+	b.Client.Gateway().Close(ctx)
+}
+
+func (b *Bot) disconnectLavaLink() {
+	b.Music.Disconnect()
 }

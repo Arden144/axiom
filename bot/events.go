@@ -6,6 +6,8 @@ import (
 	"log"
 	"time"
 
+	"github.com/arden144/axiom/embeds"
+	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
 )
 
@@ -21,13 +23,16 @@ func (b *Bot) OnApplicationCommandInteraction(e *events.ApplicationCommandIntera
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 
+		e := CommandEvent{e}
+
 		defer func() {
 			if r := recover(); r != nil {
 				log.Printf("WARN: caught panic in command handler for %s: %v", name, r)
+				if err := e.UpdateMessage(discord.NewMessageUpdateBuilder().SetEmbeds(embeds.Error()).Build()); err != nil {
+					log.Print("WARN: failed to send failiure acknowledgement: ", err)
+				}
 			}
 		}()
-
-		e := CommandEvent{e}
 
 		if err := e.DeferCreateMessage(false); err != nil {
 			log.Print("WARN: failed to send command acknowledgement: ", err)
@@ -37,6 +42,9 @@ func (b *Bot) OnApplicationCommandInteraction(e *events.ApplicationCommandIntera
 		msg, err := c.Handler(ctx, b, e)
 		if err != nil {
 			log.Print("WARN: ", err)
+			if err := e.UpdateMessage(discord.NewMessageUpdateBuilder().SetEmbeds(embeds.Error()).Build()); err != nil {
+				log.Print("WARN: failed to send failiure acknowledgement: ", err)
+			}
 			return
 		}
 

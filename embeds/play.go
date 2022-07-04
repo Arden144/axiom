@@ -3,12 +3,14 @@ package embeds
 import (
 	"fmt"
 
+	"github.com/arden144/axiom/color"
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgolink/lavalink"
 )
 
 func Play(track lavalink.AudioTrackInfo) discord.Embed {
 	embed := discord.NewEmbedBuilder()
+	embed.SetColor(color.Blue)
 	embed.SetAuthorName("Now playing")
 	embed.SetTitle(track.Title)
 	embed.SetURL(*track.URI)

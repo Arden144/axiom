@@ -54,8 +54,12 @@ func (b *Bot) Start() {
 
 	log.Print("starting")
 	b.connectDiscord(ctx)
-	b.connectLavalink(ctx)
+	b.connectLavaLink(ctx)
 
 	utility.OnSignal(os.Interrupt)
+
 	log.Print("stopping")
+	b.disconnectDiscord(ctx)
+	b.disconnectLavaLink()
+	log.Print("done")
 }

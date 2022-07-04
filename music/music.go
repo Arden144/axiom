@@ -26,6 +26,12 @@ func (m *Music) Connect(ctx context.Context, config lavalink.NodeConfig) error {
 	return err
 }
 
+func (m *Music) Disconnect() {
+	for _, n := range m.link.Nodes() {
+		m.link.RemoveNode(n.Name())
+	}
+}
+
 func (m *Music) Player(guildID snowflake.ID) Player {
 	queue, ok := m.queues[guildID]
 	if !ok {
