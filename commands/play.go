@@ -22,38 +22,41 @@ var Play = bot.Command{
 			},
 		},
 	},
-	Handler: func(ctx context.Context, b *bot.Bot, e bot.CommandEvent) (*discord.MessageUpdate, error) {
+	Handler: func(ctx context.Context, e bot.CommandEvent, msg *discord.MessageUpdateBuilder) error {
 		song := e.SlashCommandInteractionData().String("song")
-		player := b.Music.Player(*e.GuildID())
+		player := e.Bot.Music.Player(*e.GuildID())
 
-		voice, ok := b.Client.Caches().VoiceStates().Get(*e.GuildID(), e.User().ID)
+		voice, ok := e.Bot.Client.Caches().VoiceStates().Get(*e.GuildID(), e.User().ID)
 		if !ok {
-			return e.Reply("Not in a voice channel")
+			msg.SetContent("Not in a voice channel")
+			return nil
 		}
 
 		if player.ChannelID() != voice.ChannelID {
-			if err := b.Client.Connect(ctx, *e.GuildID(), *voice.ChannelID); err != nil {
-				return e.Fatal("failed to join channel", err)
+			if err := e.Bot.Client.Connect(ctx, *e.GuildID(), *voice.ChannelID); err != nil {
+				return fmt.Errorf("failed to join channel: %w", err)
 			}
 		}
 
 		tracks, err := player.Search(ctx, song)
 		if err == music.ErrNotFound {
-			return e.Reply("not found")
+			msg.SetContent("not found")
+			return nil
 		} else if err != nil {
-			return e.Fatal("failed to search", err)
+			return fmt.Errorf("failed to search: %w", err)
 		}
 
 		track := tracks[0]
 
 		if player.Playing() {
 			player.Enqueue(track)
-			return e.Reply(fmt.Sprint("Queued ", track.Info().Title))
+			msg.SetContent(fmt.Sprint("Queued ", track.Info().Title))
 		} else {
 			if err := player.Play(track); err != nil {
-				return e.Fatal("failed to play", err)
+				return fmt.Errorf("failed to play: %w", err)
 			}
-			return e.ReplyEmbed(embeds.Play(track.Info()))
+			msg.SetEmbeds(embeds.Play(track.Info()))
 		}
+		return nil
 	},
 }

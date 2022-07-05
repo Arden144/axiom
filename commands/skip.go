@@ -2,6 +2,7 @@ package commands
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/arden144/axiom/bot"
 	"github.com/disgoorg/disgo/discord"
@@ -12,21 +13,23 @@ var Skip = bot.Command{
 		CommandName: "skip",
 		Description: "skip",
 	},
-	Handler: func(ctx context.Context, b *bot.Bot, e bot.CommandEvent) (*discord.MessageUpdate, error) {
-		player := b.Music.Player(*e.GuildID())
+	Handler: func(ctx context.Context, e bot.CommandEvent, msg *discord.MessageUpdateBuilder) error {
+		player := e.Bot.Music.Player(*e.GuildID())
 
 		if !player.Playing() {
-			return e.Reply("nothing to skip")
+			msg.SetContent("nothing to skip")
+			return nil
 		}
 
 		if err := player.Stop(); err != nil {
-			return e.Fatal("failed to stop", err)
+			return fmt.Errorf("failed to stop: %w", err)
 		}
 
 		if err := player.Next(); err != nil {
-			return e.Fatal("failed to play", err)
+			return fmt.Errorf("failed to play: %w", err)
 		}
 
-		return e.Reply("skipped")
+		msg.SetContent("skipped")
+		return nil
 	},
 }

@@ -2,6 +2,7 @@ package commands
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/arden144/axiom/bot"
 	"github.com/disgoorg/disgo/discord"
@@ -12,18 +13,20 @@ var Disconnect = bot.Command{
 		CommandName: "disconnect",
 		Description: "disconnect",
 	},
-	Handler: func(ctx context.Context, b *bot.Bot, e bot.CommandEvent) (*discord.MessageUpdate, error) {
-		player := b.Music.Player(*e.GuildID())
+	Handler: func(ctx context.Context, e bot.CommandEvent, msg *discord.MessageUpdateBuilder) error {
+		player := e.Bot.Music.Player(*e.GuildID())
 
 		if !player.Connected() {
-			return e.Reply("not connected")
+			msg.SetContent("not connected")
+			return nil
 		}
 
-		if err := b.Client.Disconnect(ctx, *e.GuildID()); err != nil {
-			return e.Fatal("failed to disconnect", err)
+		if err := e.Bot.Client.Disconnect(ctx, *e.GuildID()); err != nil {
+			return fmt.Errorf("failed to disconnect: %w", err)
 		}
 		player.Clear()
 
-		return e.Reply("disconnected")
+		msg.SetContent("disconnected")
+		return nil
 	},
 }

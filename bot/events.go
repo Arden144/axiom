@@ -2,7 +2,6 @@ package bot
 
 import (
 	"context"
-	"errors"
 	"log"
 	"time"
 
@@ -12,46 +11,41 @@ import (
 )
 
 func (b *Bot) OnReady(_ *events.Ready) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	b.Client.SetPresence(ctx, discord.NewListeningPresence("bangers", discord.OnlineStatusOnline, false))
 	log.Print("ready")
 }
 
-var ErrCommandFailed = errors.New("expected")
+func (b *Bot) OnApplicationCommandInteraction(re *events.ApplicationCommandInteractionCreate) {
+	if err := re.DeferCreateMessage(false); err != nil {
+		log.Print("WARN: failed to send command acknowledgement: ", err)
+		return
+	}
 
-func (b *Bot) OnApplicationCommandInteraction(e *events.ApplicationCommandInteractionCreate) {
+	e := CommandEvent{re, b}
+
 	name := e.Data.CommandName()
-	if c, ok := b.Commands[name]; ok {
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-
-		e := CommandEvent{e}
-
-		defer func() {
-			if r := recover(); r != nil {
-				log.Printf("WARN: caught panic in command handler for %s: %v", name, r)
-				if err := e.UpdateMessage(discord.NewMessageUpdateBuilder().SetEmbeds(embeds.Error()).Build()); err != nil {
-					log.Print("WARN: failed to send failiure acknowledgement: ", err)
-				}
-			}
-		}()
-
-		if err := e.DeferCreateMessage(false); err != nil {
-			log.Print("WARN: failed to send command acknowledgement: ", err)
-			return
-		}
-
-		msg, err := c.Handler(ctx, b, e)
-		if err != nil {
-			log.Print("WARN: ", err)
-			if err := e.UpdateMessage(discord.NewMessageUpdateBuilder().SetEmbeds(embeds.Error()).Build()); err != nil {
-				log.Print("WARN: failed to send failiure acknowledgement: ", err)
-			}
-			return
-		}
-
-		if err := e.UpdateMessage(*msg); err != nil {
-			log.Printf("WARN: failed to send response for %s: %s", name, err)
-		}
-	} else {
+	c, ok := b.Commands[name]
+	if !ok {
 		log.Printf("WARN: %s is not a valid command name", name)
+		return
+	}
+
+	msg := discord.NewMessageUpdateBuilder()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := c.Handler(ctx, e, msg); err != nil {
+		log.Printf("WARN: command handler for %v failed: %v", name, err)
+		if err := e.UpdateMessage(discord.NewMessageUpdateBuilder().SetEmbeds(embeds.Error()).Build()); err != nil {
+			log.Print("WARN: failed to send failiure acknowledgement: ", err)
+		}
+		return
+	}
+
+	if err := e.UpdateMessage(msg.Build()); err != nil {
+		log.Printf("WARN: failed to send response for %v: %v", name, err)
 	}
 }

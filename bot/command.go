@@ -12,11 +12,12 @@ type SlashCommand = discord.SlashCommandCreate
 
 type Command struct {
 	Create  SlashCommand
-	Handler func(context.Context, *Bot, CommandEvent) (*discord.MessageUpdate, error)
+	Handler func(context.Context, CommandEvent, *discord.MessageUpdateBuilder) error
 }
 
 type CommandEvent struct {
 	*events.ApplicationCommandInteractionCreate
+	Bot *Bot
 }
 
 func (b *Bot) ClearCommands() {
