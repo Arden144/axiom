@@ -56,6 +56,7 @@ var Play = bot.Command{
 				return fmt.Errorf("failed to play: %w", err)
 			}
 			msg.SetEmbeds(embeds.Play(track.Info()))
+			msg.AddActionRow(discord.NewPrimaryButton("Pause", "pause"))
 		}
 		return nil
 	},

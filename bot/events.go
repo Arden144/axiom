@@ -18,6 +18,24 @@ func (b *Bot) OnReady(_ *events.Ready) {
 	log.Print("ready")
 }
 
+func (b *Bot) OnComponentInteraction(e *events.ComponentInteractionCreate) {
+	player := b.Music.Player(*e.GuildID())
+
+	voice, ok := b.Client.Caches().VoiceStates().Get(*e.GuildID(), e.User().ID)
+	if !ok {
+		e.CreateModal(discord.NewModalCreateBuilder().SetTitle("You must be in a voice channel to pause the music.").Build())
+		return
+	}
+
+	if player.ChannelID() != voice.ChannelID {
+		e.CreateModal(discord.NewModalCreateBuilder().SetTitle("You must be in a channel with music playing to pause.").Build())
+		return
+	}
+
+	player.Pause(true)
+	e.Respond(discord.InteractionResponseTypePong, nil)
+}
+
 func (b *Bot) OnApplicationCommandInteraction(re *events.ApplicationCommandInteractionCreate) {
 	if err := re.DeferCreateMessage(false); err != nil {
 		log.Print("WARN: failed to send command acknowledgement: ", err)
