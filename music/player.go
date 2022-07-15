@@ -12,7 +12,7 @@ var ErrNotFound = errors.New("track not found")
 
 type Player struct {
 	lavalink.Player
-	*Queue
+	Queue
 }
 
 func (p *Player) Search(ctx context.Context, name string) ([]lavalink.AudioTrack, error) {

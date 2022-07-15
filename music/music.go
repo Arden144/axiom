@@ -39,7 +39,7 @@ func (m *Music) Player(guildID snowflake.ID) Player {
 		m.queues[guildID] = queue
 	}
 
-	player := Player{Queue: &queue}
+	player := Player{Queue: queue}
 
 	player.Player = m.link.ExistingPlayer(guildID)
 	if player.Player == nil {
