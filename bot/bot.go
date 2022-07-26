@@ -38,6 +38,7 @@ func (b *Bot) Setup() {
 		bot.WithGatewayConfigOpts(gateway.WithGatewayIntents(discord.GatewayIntentGuildVoiceStates)),
 		bot.WithCacheConfigOpts(cache.WithCacheFlags(cache.FlagVoiceStates)),
 		bot.WithEventListenerFunc(b.OnReady),
+		bot.WithEventListenerFunc(b.OnComponentInteraction),
 		bot.WithEventListenerFunc(b.OnApplicationCommandInteraction),
 	)
 	if err != nil {
