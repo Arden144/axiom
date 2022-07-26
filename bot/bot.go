@@ -20,12 +20,14 @@ type Bot struct {
 	Config   config.Config
 	Music    music.Music
 	Commands map[string]Command
+	Buttons  map[string]Button
 }
 
 func New(config config.Config) Bot {
 	return Bot{
 		Config:   config,
 		Commands: make(map[string]Command),
+		Buttons:  make(map[string]Button),
 	}
 }
 

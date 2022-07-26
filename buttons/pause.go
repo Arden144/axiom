@@ -1,4 +1,4 @@
-package commands
+package buttons
 
 import (
 	"context"
@@ -9,12 +9,9 @@ import (
 	"github.com/disgoorg/disgo/discord"
 )
 
-var Pause = bot.Command{
-	Create: bot.SlashCommand{
-		CommandName: "pause",
-		Description: "pause",
-	},
-	Handler: func(_ context.Context, e bot.CommandEvent, msg *discord.MessageUpdateBuilder) error {
+var Pause = bot.Button{
+	Query: "pause",
+	Handler: func(ctx context.Context, e bot.ButtonEvent, msg *discord.MessageCreateBuilder) error {
 		player := e.Bot.Music.Player(*e.GuildID())
 
 		if !player.Playing() {

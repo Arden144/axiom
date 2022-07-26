@@ -57,6 +57,8 @@ var Play = bot.Command{
 			}
 			msg.SetEmbeds(embeds.Play(track.Info()))
 		}
+
+		msg.AddActionRow(discord.NewButton(discord.ButtonStylePrimary, "Pause", discord.CustomID("pause"), ""))
 		return nil
 	},
 }
