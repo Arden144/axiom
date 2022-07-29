@@ -48,6 +48,7 @@ func (b *Bot) AddCommands(cs ...Command) {
 	for _, c := range cs {
 		b.Commands[c.Create.Name()] = c
 
+		b.Client.Caches().Guilds()
 		if _, err := b.Client.Rest().CreateGuildCommand(b.Client.ApplicationID(), b.Config.DevGuildID, c.Create); err != nil {
 			log.Fatal("failed to add command: ", err)
 		}

@@ -35,8 +35,8 @@ func (b *Bot) Setup() {
 	var err error
 
 	b.Client, err = disgo.New(b.Config.Token,
-		bot.WithGatewayConfigOpts(gateway.WithGatewayIntents(discord.GatewayIntentGuildVoiceStates)),
-		bot.WithCacheConfigOpts(cache.WithCacheFlags(cache.FlagVoiceStates)),
+		bot.WithGatewayConfigOpts(gateway.WithGatewayIntents(discord.GatewayIntentGuildVoiceStates, discord.GatewayIntentGuilds)),
+		bot.WithCacheConfigOpts(cache.WithCacheFlags(cache.FlagVoiceStates, cache.FlagGuilds)),
 		bot.WithEventListenerFunc(b.OnReady),
 		bot.WithEventListenerFunc(b.OnComponentInteraction),
 		bot.WithEventListenerFunc(b.OnApplicationCommandInteraction),
