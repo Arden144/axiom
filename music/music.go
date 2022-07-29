@@ -3,47 +3,40 @@ package music
 import (
 	"context"
 
-	"github.com/disgoorg/disgo/bot"
+	"github.com/arden144/axiom/bot"
+	"github.com/arden144/axiom/config"
 	"github.com/disgoorg/disgolink/disgolink"
-	"github.com/disgoorg/disgolink/lavalink"
 	"github.com/disgoorg/snowflake/v2"
 )
 
-type Music struct {
-	link   disgolink.Link
-	queues map[snowflake.ID]Queue
+var link disgolink.Link
+var queues map[snowflake.ID]Queue = make(map[snowflake.ID]Queue)
+
+var ctx = context.Background()
+
+func init() {
+	link = disgolink.New(bot.Client)
+	link.AddNode(ctx, config.Config.Lavalink)
 }
 
-func New(client bot.Client, opts ...lavalink.ConfigOpt) Music {
-	return Music{
-		link:   disgolink.New(client, opts...),
-		queues: make(map[snowflake.ID]Queue),
-	}
-}
+// func (m *Music) Disconnect() {
+// 	for _, n := range m.link.Nodes() {
+// 		m.link.RemoveNode(n.Name())
+// 	}
+// }
 
-func (m *Music) Connect(ctx context.Context, config lavalink.NodeConfig) error {
-	_, err := m.link.AddNode(ctx, config)
-	return err
-}
-
-func (m *Music) Disconnect() {
-	for _, n := range m.link.Nodes() {
-		m.link.RemoveNode(n.Name())
-	}
-}
-
-func (m *Music) Player(guildID snowflake.ID) Player {
-	queue, ok := m.queues[guildID]
+func Player(guildID snowflake.ID) PlayerType {
+	queue, ok := queues[guildID]
 	if !ok {
 		queue = newQueue()
-		m.queues[guildID] = queue
+		queues[guildID] = queue
 	}
 
-	player := Player{Queue: queue}
+	player := PlayerType{Queue: queue}
 
-	player.Player = m.link.ExistingPlayer(guildID)
+	player.Player = link.ExistingPlayer(guildID)
 	if player.Player == nil {
-		player.Player = m.link.Player(guildID)
+		player.Player = link.Player(guildID)
 		player.AddListener(newListener(player))
 	}
 

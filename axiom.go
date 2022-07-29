@@ -4,17 +4,10 @@ import (
 	"github.com/arden144/axiom/bot"
 	"github.com/arden144/axiom/buttons"
 	"github.com/arden144/axiom/commands"
-	"github.com/arden144/axiom/config"
 )
 
 func main() {
-	config := config.Read("config.json")
-	bot := bot.New(config)
-	bot.Setup()
-
 	// bot.ClearCommands()
 	bot.AddCommands(commands.Play, commands.Skip, commands.Disconnect, commands.Pause, commands.Resume)
 	bot.AddButtons(buttons.Pause)
-
-	bot.Start()
 }

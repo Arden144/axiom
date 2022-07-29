@@ -14,7 +14,6 @@ import (
 type ButtonEvent struct {
 	*events.ComponentInteractionCreate
 	Data ButtonData
-	Bot  *Bot
 }
 
 type Button struct {
@@ -79,8 +78,8 @@ func parse(id discord.CustomID) (string, map[string]string, error) {
 	return query, params, nil
 }
 
-func (b *Bot) AddButtons(bs ...Button) {
+func AddButtons(bs ...Button) {
 	for _, bt := range bs {
-		b.Buttons[bt.Query] = bt
+		Buttons[bt.Query] = bt
 	}
 }

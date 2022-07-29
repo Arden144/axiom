@@ -24,16 +24,16 @@ var Play = bot.Command{
 	},
 	Handler: func(ctx context.Context, e bot.CommandEvent, msg *discord.MessageUpdateBuilder) error {
 		song := e.SlashCommandInteractionData().String("song")
-		player := e.Bot.Music.Player(*e.GuildID())
+		player := music.Player(*e.GuildID())
 
-		voice, ok := e.Bot.Client.Caches().VoiceStates().Get(*e.GuildID(), e.User().ID)
+		voice, ok := bot.Client.Caches().VoiceStates().Get(*e.GuildID(), e.User().ID)
 		if !ok {
 			msg.SetContent("Not in a voice channel")
 			return nil
 		}
 
 		if player.ChannelID() != voice.ChannelID {
-			if err := e.Bot.Client.Connect(ctx, *e.GuildID(), *voice.ChannelID); err != nil {
+			if err := bot.Client.Connect(ctx, *e.GuildID(), *voice.ChannelID); err != nil {
 				return fmt.Errorf("failed to join channel: %w", err)
 			}
 		}

@@ -8,10 +8,10 @@ import (
 
 type eventListener struct {
 	lavalink.PlayerEventAdapter
-	player Player
+	player PlayerType
 }
 
-func newListener(player Player) *eventListener {
+func newListener(player PlayerType) *eventListener {
 	return &eventListener{player: player}
 }
 

@@ -10,15 +10,15 @@ import (
 	"github.com/disgoorg/disgo/events"
 )
 
-func (b *Bot) OnReady(_ *events.Ready) {
+func OnReady(_ *events.Ready) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	b.Client.SetPresence(ctx, discord.NewListeningPresence("bangers", discord.OnlineStatusOnline, false))
+	Client.SetPresence(ctx, discord.NewListeningPresence("bangers", discord.OnlineStatusOnline, false))
 	log.Print("ready")
 }
 
-func (b *Bot) OnComponentInteraction(re *events.ComponentInteractionCreate) {
+func OnComponentInteraction(re *events.ComponentInteractionCreate) {
 	id := re.ButtonInteractionData().CustomID()
 	query, params, err := parse(id)
 	if err != nil {
@@ -26,13 +26,13 @@ func (b *Bot) OnComponentInteraction(re *events.ComponentInteractionCreate) {
 		return
 	}
 
-	bt, ok := b.Buttons[query]
+	bt, ok := Buttons[query]
 	if !ok {
 		log.Printf("WARN: %s is not a valid button id", query)
 		return
 	}
 
-	e := ButtonEvent{re, ButtonData{params}, b}
+	e := ButtonEvent{re, ButtonData{params}}
 
 	msg := discord.NewMessageCreateBuilder()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -50,16 +50,16 @@ func (b *Bot) OnComponentInteraction(re *events.ComponentInteractionCreate) {
 	}
 }
 
-func (b *Bot) OnApplicationCommandInteraction(re *events.ApplicationCommandInteractionCreate) {
+func OnApplicationCommandInteraction(re *events.ApplicationCommandInteractionCreate) {
 	if err := re.DeferCreateMessage(false); err != nil {
 		log.Print("WARN: failed to send command acknowledgement: ", err)
 		return
 	}
 
-	e := CommandEvent{re, b}
+	e := CommandEvent{re}
 
 	name := e.Data.CommandName()
-	c, ok := b.Commands[name]
+	c, ok := Commands[name]
 	if !ok {
 		log.Printf("WARN: %s is not a valid command name", name)
 		return

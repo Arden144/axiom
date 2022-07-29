@@ -6,13 +6,14 @@ import (
 
 	"github.com/arden144/axiom/bot"
 	"github.com/arden144/axiom/embeds"
+	"github.com/arden144/axiom/music"
 	"github.com/disgoorg/disgo/discord"
 )
 
 var Pause = bot.Button{
 	Query: "pause",
 	Handler: func(ctx context.Context, e bot.ButtonEvent, msg *discord.MessageCreateBuilder) error {
-		player := e.Bot.Music.Player(*e.GuildID())
+		player := music.Player(*e.GuildID())
 
 		if !player.Playing() {
 			msg.SetContent("nothing to pause")

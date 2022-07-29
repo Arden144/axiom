@@ -3,11 +3,8 @@ package bot
 import (
 	"context"
 	"log"
-	"os"
 
 	"github.com/arden144/axiom/config"
-	"github.com/arden144/axiom/music"
-	"github.com/arden144/axiom/utility"
 	"github.com/disgoorg/disgo"
 	"github.com/disgoorg/disgo/bot"
 	"github.com/disgoorg/disgo/cache"
@@ -15,54 +12,50 @@ import (
 	"github.com/disgoorg/disgo/gateway"
 )
 
-type Bot struct {
+var (
 	Client   bot.Client
-	Config   config.Config
-	Music    music.Music
-	Commands map[string]Command
-	Buttons  map[string]Button
-}
+	Commands map[string]Command = make(map[string]Command)
+	Buttons  map[string]Button  = make(map[string]Button)
+)
 
-func New(config config.Config) Bot {
-	return Bot{
-		Config:   config,
-		Commands: make(map[string]Command),
-		Buttons:  make(map[string]Button),
-	}
-}
+var ctx = context.Background()
 
-func (b *Bot) Setup() {
+func init() {
 	var err error
-
-	b.Client, err = disgo.New(b.Config.Token,
+	Client, err = disgo.New(config.Config.Token,
 		bot.WithGatewayConfigOpts(gateway.WithGatewayIntents(discord.GatewayIntentGuildVoiceStates)),
 		bot.WithCacheConfigOpts(cache.WithCacheFlags(cache.FlagVoiceStates)),
-		bot.WithEventListenerFunc(b.OnReady),
-		bot.WithEventListenerFunc(b.OnComponentInteraction),
-		bot.WithEventListenerFunc(b.OnApplicationCommandInteraction),
+		bot.WithEventListenerFunc(OnReady),
+		bot.WithEventListenerFunc(OnComponentInteraction),
+		bot.WithEventListenerFunc(OnApplicationCommandInteraction),
 	)
 	if err != nil {
 		log.Fatal("failed to configure bot: ", err)
 	}
 
-	b.Music = music.New(b.Client)
-}
+	ctx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
 
-func (b *Bot) Start() {
-	if b.Client == nil {
-		log.Fatal("call bot.Setup() before bot.Start()")
+	if err := Client.ConnectGateway(ctx); err != nil {
+		log.Fatal("failed to start bot: ", err)
 	}
-
-	ctx := context.Background()
-
-	log.Print("starting")
-	b.connectDiscord(ctx)
-	b.connectLavaLink(ctx)
-
-	utility.OnSignal(os.Interrupt)
-
-	log.Print("stopping")
-	b.disconnectDiscord(ctx)
-	b.disconnectLavaLink()
-	log.Print("done")
 }
+
+// func (b *Bot) Start() {
+// 	if b.Client == nil {
+// 		log.Fatal("call bot.Setup() before bot.Start()")
+// 	}
+
+// 	ctx := context.Background()
+
+// 	log.Print("starting")
+// 	b.connectDiscord(ctx)
+// 	b.connectLavaLink(ctx)
+
+// 	utility.OnSignal(os.Interrupt)
+
+// 	log.Print("stopping")
+// 	b.disconnectDiscord(ctx)
+// 	b.disconnectLavaLink()
+// 	log.Print("done")
+// }
