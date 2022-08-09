@@ -3,10 +3,12 @@ package commands
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/arden144/axiom/bot"
 	"github.com/arden144/axiom/embeds"
 	"github.com/arden144/axiom/music"
+	"github.com/arden144/axiom/search"
 	"github.com/disgoorg/disgo/discord"
 )
 
@@ -38,7 +40,12 @@ var Play = bot.Command{
 			}
 		}
 
-		tracks, err := player.Search(ctx, song)
+		info, err := search.Search(song)
+		if err != nil {
+			return fmt.Errorf("search failed: %w", err)
+		}
+
+		tracks, err := player.Search(ctx, fmt.Sprintf("%v - %v", info.Artists[0].Name, info.Name))
 		if err == music.ErrNotFound {
 			msg.SetContent("not found")
 			return nil
@@ -47,6 +54,12 @@ var Play = bot.Command{
 		}
 
 		track := tracks[0]
+		for _, v := range tracks {
+			if !strings.Contains(strings.ToLower(v.Info().Title), "video") {
+				track = v
+				break
+			}
+		}
 
 		if player.Playing() {
 			player.Enqueue(track)
