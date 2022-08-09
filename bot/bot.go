@@ -15,11 +15,10 @@ import (
 
 var (
 	Client   bot.Client
-	Commands map[string]Command = make(map[string]Command)
-	Buttons  map[string]Button  = make(map[string]Button)
+	Ctx      = context.Background()
+	Commands = make(map[string]Command)
+	Buttons  = make(map[string]Button)
 )
-
-var ctx = context.Background()
 
 func init() {
 	var err error
@@ -35,7 +34,7 @@ func init() {
 		log.L.Fatal("failed to configure bot: ", zap.Error(err))
 	}
 
-	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	ctx, cancel := context.WithTimeout(Ctx, 10*time.Second)
 	defer cancel()
 
 	if err := Client.OpenGateway(ctx); err != nil {

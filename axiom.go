@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"os"
 
 	"github.com/arden144/axiom/bot"
@@ -13,7 +12,7 @@ import (
 
 func main() {
 	defer log.L.Sync()
-	defer bot.Client.Close(context.Background())
+	defer bot.Client.Close(bot.Ctx)
 
 	// bot.ClearCommands()
 	bot.AddCommands(commands.Play, commands.Skip, commands.Disconnect, commands.Pause, commands.Resume)

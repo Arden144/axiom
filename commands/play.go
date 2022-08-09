@@ -40,7 +40,7 @@ var Play = bot.Command{
 			}
 		}
 
-		info, err := search.Search(song)
+		info, err := search.Search(ctx, song)
 		if err != nil {
 			return fmt.Errorf("search failed: %w", err)
 		}

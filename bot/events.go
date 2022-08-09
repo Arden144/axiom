@@ -13,7 +13,7 @@ import (
 )
 
 func OnReady(ev *events.Ready) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(Ctx, 5*time.Second)
 	defer cancel()
 
 	Client.SetPresence(ctx, gateway.NewPresence(discord.ActivityTypeListening, "bangers", "", discord.OnlineStatusOnline, false))
@@ -37,7 +37,7 @@ func OnComponentInteraction(re *events.ComponentInteractionCreate) {
 	ev := ButtonEvent{re, ButtonData{params}}
 
 	msg := discord.NewMessageCreateBuilder()
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(Ctx, 5*time.Second)
 	defer cancel()
 
 	if err := bt.Handler(ctx, ev, msg); err != nil {
@@ -68,7 +68,7 @@ func OnApplicationCommandInteraction(re *events.ApplicationCommandInteractionCre
 	}
 
 	msg := discord.NewMessageUpdateBuilder()
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(Ctx, 5*time.Second)
 	defer cancel()
 
 	if err := c.Handler(ctx, ev, msg); err != nil {

@@ -1,6 +1,9 @@
 package search
 
-import "errors"
+import (
+	"context"
+	"errors"
+)
 
 type Image struct {
 	Url string
@@ -38,7 +41,7 @@ type Result struct {
 
 var ErrNoResults = errors.New("no results found")
 
-func Search(query string) (*Track, error) {
+func Search(ctx context.Context, query string) (*Track, error) {
 	var result Result
 
 	params := map[string]string{
@@ -48,6 +51,7 @@ func Search(query string) (*Track, error) {
 	}
 
 	_, err := client.R().
+		SetContext(ctx).
 		SetQueryParams(params).
 		SetResult(&result).
 		Get(SEARCH)

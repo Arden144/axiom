@@ -1,8 +1,6 @@
 package music
 
 import (
-	"context"
-
 	"github.com/arden144/axiom/bot"
 	"github.com/arden144/axiom/config"
 	"github.com/arden144/axiom/log"
@@ -12,7 +10,6 @@ import (
 )
 
 var (
-	ctx    = context.Background()
 	link   disgolink.Link
 	queues map[snowflake.ID]Queue = make(map[snowflake.ID]Queue)
 )
@@ -20,7 +17,7 @@ var (
 func init() {
 	link = disgolink.New(bot.Client)
 
-	_, err := link.AddNode(ctx, config.Lavalink)
+	_, err := link.AddNode(bot.Ctx, config.Lavalink)
 	if err != nil {
 		log.L.Fatal("failed to connect to lavalink", zap.Error(err))
 	}
