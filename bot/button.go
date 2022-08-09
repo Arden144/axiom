@@ -60,10 +60,10 @@ func (d *ButtonData) Snowflake(name string) snowflake.ID {
 	return id
 }
 
-func parse(id discord.CustomID) (string, map[string]string, error) {
+func parseButtonID(id string) (string, map[string]string, error) {
 	params := make(map[string]string)
 
-	query, form, ok := strings.Cut(string(id), "?")
+	query, form, ok := strings.Cut(id, "?")
 	if ok {
 		for _, part := range strings.Split(form, "&") {
 			k, v, ok := strings.Cut(part, "=")

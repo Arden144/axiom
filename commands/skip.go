@@ -11,11 +11,11 @@ import (
 
 var Skip = bot.Command{
 	Create: bot.SlashCommand{
-		CommandName: "skip",
+		Name:        "skip",
 		Description: "skip",
 	},
 	Handler: func(ctx context.Context, e bot.CommandEvent, msg *discord.MessageUpdateBuilder) error {
-		player := music.Player(*e.GuildID())
+		player := music.GetPlayer(*e.GuildID())
 
 		if !player.Playing() {
 			msg.SetContent("nothing to skip")

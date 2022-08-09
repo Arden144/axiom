@@ -10,12 +10,12 @@ import (
 
 var ErrNotFound = errors.New("track not found")
 
-type PlayerType struct {
+type Player struct {
 	lavalink.Player
 	Queue
 }
 
-func (p *PlayerType) Search(ctx context.Context, name string) ([]lavalink.AudioTrack, error) {
+func (p *Player) Search(ctx context.Context, name string) ([]lavalink.AudioTrack, error) {
 	l := p.Node().Lavalink()
 	c := l.BestRestClient()
 
@@ -44,14 +44,14 @@ func (p *PlayerType) Search(ctx context.Context, name string) ([]lavalink.AudioT
 	return tracks, nil
 }
 
-func (p *PlayerType) Next() error {
+func (p *Player) Next() error {
 	if track, ok := p.Dequeue(); ok {
 		return p.Play(track)
 	}
 	return nil
 }
 
-func (p *PlayerType) Playing() bool {
+func (p *Player) Playing() bool {
 	track := p.PlayingTrack()
 	return track != nil && track.Info().Length != p.Position()
 }

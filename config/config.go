@@ -2,18 +2,31 @@ package config
 
 import (
 	"encoding/json"
-	"fmt"
-	"log"
 	"os"
 
+	"github.com/arden144/axiom/log"
 	"github.com/disgoorg/disgolink/lavalink"
 	"github.com/disgoorg/snowflake/v2"
+	"go.uber.org/zap"
 )
 
 const path = "config.json"
 
-var Config struct {
+var (
+	Lavalink   lavalink.NodeConfig
+	Spotify    SpotifyConfig
+	Token      string
+	DevGuildID snowflake.ID
+)
+
+type SpotifyConfig struct {
+	ClientID     string `json:"clientId"`
+	ClientSecret string `json:"clientSecret"`
+}
+
+type config struct {
 	Lavalink   lavalink.NodeConfig `json:"lavalink"`
+	Spotify    SpotifyConfig       `json:"spotify"`
 	Token      string              `json:"token"`
 	DevGuildID snowflake.ID        `json:"devGuildId"`
 }
@@ -21,12 +34,16 @@ var Config struct {
 func init() {
 	file, err := os.Open(path)
 	if err != nil {
-		log.Fatal("failed to read config: ", err)
+		log.L.Fatal("failed to read config", zap.Error(err))
 	}
 
-	if err = json.NewDecoder(file).Decode(&Config); err != nil {
-		log.Fatal("failed to read json: ", err)
+	var config config
+	if err = json.NewDecoder(file).Decode(&config); err != nil {
+		log.L.Fatal("failed to read json", zap.Error(err))
 	}
 
-	fmt.Println(Config)
+	Lavalink = config.Lavalink
+	Spotify = config.Spotify
+	Token = config.Token
+	DevGuildID = config.DevGuildID
 }

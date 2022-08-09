@@ -12,11 +12,11 @@ import (
 
 var Pause = bot.Command{
 	Create: bot.SlashCommand{
-		CommandName: "pause",
+		Name:        "pause",
 		Description: "pause",
 	},
 	Handler: func(_ context.Context, e bot.CommandEvent, msg *discord.MessageUpdateBuilder) error {
-		player := music.Player(*e.GuildID())
+		player := music.GetPlayer(*e.GuildID())
 
 		if !player.Playing() {
 			msg.SetContent("nothing to pause")

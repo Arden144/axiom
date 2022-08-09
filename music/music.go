@@ -5,34 +5,35 @@ import (
 
 	"github.com/arden144/axiom/bot"
 	"github.com/arden144/axiom/config"
+	"github.com/arden144/axiom/log"
 	"github.com/disgoorg/disgolink/disgolink"
 	"github.com/disgoorg/snowflake/v2"
+	"go.uber.org/zap"
 )
 
-var link disgolink.Link
-var queues map[snowflake.ID]Queue = make(map[snowflake.ID]Queue)
-
-var ctx = context.Background()
+var (
+	ctx    = context.Background()
+	link   disgolink.Link
+	queues map[snowflake.ID]Queue = make(map[snowflake.ID]Queue)
+)
 
 func init() {
 	link = disgolink.New(bot.Client)
-	link.AddNode(ctx, config.Config.Lavalink)
+
+	_, err := link.AddNode(ctx, config.Lavalink)
+	if err != nil {
+		log.L.Fatal("failed to connect to lavalink", zap.Error(err))
+	}
 }
 
-// func (m *Music) Disconnect() {
-// 	for _, n := range m.link.Nodes() {
-// 		m.link.RemoveNode(n.Name())
-// 	}
-// }
-
-func Player(guildID snowflake.ID) PlayerType {
+func GetPlayer(guildID snowflake.ID) Player {
 	queue, ok := queues[guildID]
 	if !ok {
 		queue = newQueue()
 		queues[guildID] = queue
 	}
 
-	player := PlayerType{Queue: queue}
+	player := Player{Queue: queue}
 
 	player.Player = link.ExistingPlayer(guildID)
 	if player.Player == nil {

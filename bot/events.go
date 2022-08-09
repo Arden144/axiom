@@ -2,66 +2,68 @@ package bot
 
 import (
 	"context"
-	"log"
 	"time"
 
 	"github.com/arden144/axiom/embeds"
+	"github.com/arden144/axiom/log"
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
+	"github.com/disgoorg/disgo/gateway"
+	"go.uber.org/zap"
 )
 
-func OnReady(_ *events.Ready) {
+func OnReady(ev *events.Ready) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	Client.SetPresence(ctx, discord.NewListeningPresence("bangers", discord.OnlineStatusOnline, false))
-	log.Print("ready")
+	Client.SetPresence(ctx, gateway.NewPresence(discord.ActivityTypeListening, "bangers", "", discord.OnlineStatusOnline, false))
+	log.L.Info("ready", zap.String("username", ev.User.Username), zap.String("discriminator", ev.User.Discriminator))
 }
 
 func OnComponentInteraction(re *events.ComponentInteractionCreate) {
 	id := re.ButtonInteractionData().CustomID()
-	query, params, err := parse(id)
+	query, params, err := parseButtonID(id)
 	if err != nil {
-		log.Print("WARN: failed to parse custom id: ", err)
+		log.L.Warn("failed to parse custom id", zap.Error(err))
 		return
 	}
 
 	bt, ok := Buttons[query]
 	if !ok {
-		log.Printf("WARN: %s is not a valid button id", query)
+		log.L.Warn("not a valid button id", zap.String("id", query))
 		return
 	}
 
-	e := ButtonEvent{re, ButtonData{params}}
+	ev := ButtonEvent{re, ButtonData{params}}
 
 	msg := discord.NewMessageCreateBuilder()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	if err := bt.Handler(ctx, e, msg); err != nil {
-		log.Printf("WARN: button handler for %v failed: %v", query, err)
-		if err := e.CreateMessage(discord.NewMessageCreateBuilder().SetEmbeds(embeds.Error()).Build()); err != nil {
-			log.Print("WARN: failed to send failiure acknowledgement: ", err)
+	if err := bt.Handler(ctx, ev, msg); err != nil {
+		log.L.Warn("button handler failed", zap.String("id", query), zap.Error(err))
+		if err := ev.CreateMessage(discord.NewMessageCreateBuilder().SetEmbeds(embeds.Error()).Build()); err != nil {
+			log.L.Warn("failed to send failiure acknowledgement: ", zap.Error(err))
 		}
 	}
 
-	if err := e.CreateMessage(msg.Build()); err != nil {
-		log.Printf("WARN: failed to send response for %v: %v", query, err)
+	if err := ev.CreateMessage(msg.Build()); err != nil {
+		log.L.Warn("failed to send response", zap.String("id", query), zap.Error(err))
 	}
 }
 
 func OnApplicationCommandInteraction(re *events.ApplicationCommandInteractionCreate) {
 	if err := re.DeferCreateMessage(false); err != nil {
-		log.Print("WARN: failed to send command acknowledgement: ", err)
+		log.L.Warn("failed to send command acknowledgement: ", zap.Error(err))
 		return
 	}
 
-	e := CommandEvent{re}
+	ev := CommandEvent{re}
 
-	name := e.Data.CommandName()
+	name := ev.Data.CommandName()
 	c, ok := Commands[name]
 	if !ok {
-		log.Printf("WARN: %s is not a valid command name", name)
+		log.L.Warn("not a valid command name", zap.String("command", name))
 		return
 	}
 
@@ -69,15 +71,15 @@ func OnApplicationCommandInteraction(re *events.ApplicationCommandInteractionCre
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	if err := c.Handler(ctx, e, msg); err != nil {
-		log.Printf("WARN: command handler for %v failed: %v", name, err)
-		if err := e.UpdateMessage(discord.NewMessageUpdateBuilder().SetEmbeds(embeds.Error()).Build()); err != nil {
-			log.Print("WARN: failed to send failiure acknowledgement: ", err)
+	if err := c.Handler(ctx, ev, msg); err != nil {
+		log.L.Warn("button handler failed", zap.String("command", name), zap.Error(err))
+		if err := ev.UpdateMessage(discord.NewMessageUpdateBuilder().SetEmbeds(embeds.Error()).Build()); err != nil {
+			log.L.Warn("failed to send failiure acknowledgement: ", zap.Error(err))
 		}
 		return
 	}
 
-	if err := e.UpdateMessage(msg.Build()); err != nil {
-		log.Printf("WARN: failed to send response for %v: %v", name, err)
+	if err := ev.UpdateMessage(msg.Build()); err != nil {
+		log.L.Warn("failed to send response", zap.String("command", name), zap.Error(err))
 	}
 }

@@ -11,11 +11,11 @@ import (
 
 var Disconnect = bot.Command{
 	Create: bot.SlashCommand{
-		CommandName: "disconnect",
+		Name:        "disconnect",
 		Description: "disconnect",
 	},
 	Handler: func(ctx context.Context, e bot.CommandEvent, msg *discord.MessageUpdateBuilder) error {
-		player := music.Player(*e.GuildID())
+		player := music.GetPlayer(*e.GuildID())
 
 		if !player.Connected() {
 			msg.SetContent("not connected")

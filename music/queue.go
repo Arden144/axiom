@@ -6,9 +6,7 @@ import (
 	"github.com/disgoorg/disgolink/lavalink"
 )
 
-type Queue struct {
-	*list.List
-}
+type Queue struct{ *list.List }
 
 func newQueue() Queue {
 	return Queue{list.New()}

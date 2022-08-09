@@ -12,8 +12,8 @@ import (
 
 var Pause = bot.Button{
 	Query: "pause",
-	Handler: func(ctx context.Context, e bot.ButtonEvent, msg *discord.MessageCreateBuilder) error {
-		player := music.Player(*e.GuildID())
+	Handler: func(_ context.Context, e bot.ButtonEvent, msg *discord.MessageCreateBuilder) error {
+		player := music.GetPlayer(*e.GuildID())
 
 		if !player.Playing() {
 			msg.SetContent("nothing to pause")

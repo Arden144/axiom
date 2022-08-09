@@ -12,7 +12,7 @@ import (
 
 var Play = bot.Command{
 	Create: bot.SlashCommand{
-		CommandName: "play",
+		Name:        "play",
 		Description: "play",
 		Options: []discord.ApplicationCommandOption{
 			discord.ApplicationCommandOptionString{
@@ -24,7 +24,7 @@ var Play = bot.Command{
 	},
 	Handler: func(ctx context.Context, e bot.CommandEvent, msg *discord.MessageUpdateBuilder) error {
 		song := e.SlashCommandInteractionData().String("song")
-		player := music.Player(*e.GuildID())
+		player := music.GetPlayer(*e.GuildID())
 
 		voice, ok := bot.Client.Caches().VoiceStates().Get(*e.GuildID(), e.User().ID)
 		if !ok {
@@ -58,7 +58,7 @@ var Play = bot.Command{
 			msg.SetEmbeds(embeds.Play(track.Info()))
 		}
 
-		msg.AddActionRow(discord.NewButton(discord.ButtonStylePrimary, "Pause", discord.CustomID("pause"), ""))
+		msg.AddActionRow(discord.NewButton(discord.ButtonStylePrimary, "Pause", "pause", ""))
 		return nil
 	},
 }

@@ -11,11 +11,11 @@ import (
 
 var Resume = bot.Command{
 	Create: bot.SlashCommand{
-		CommandName: "resume",
+		Name:        "resume",
 		Description: "resume",
 	},
 	Handler: func(_ context.Context, e bot.CommandEvent, msg *discord.MessageUpdateBuilder) error {
-		player := music.Player(*e.GuildID())
+		player := music.GetPlayer(*e.GuildID())
 
 		if !player.Playing() {
 			msg.SetContent("nothing to resume")
