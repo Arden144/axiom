@@ -17,6 +17,10 @@ type authorization struct {
 }
 
 func init() {
+	authorize()
+}
+
+func authorize() {
 	var result authorization
 
 	ctx, cancel := context.WithTimeout(bot.Ctx, 10*time.Second)
@@ -34,4 +38,6 @@ func init() {
 	}
 
 	client.SetCommonBearerAuthToken(result.AccessToken)
+
+	time.AfterFunc(time.Duration(result.ExpiresIn-60)*time.Second, authorize)
 }
