@@ -55,7 +55,7 @@ var Play = bot.Command{
 
 		track := tracks[0]
 		for _, v := range tracks {
-			if !strings.Contains(strings.ToLower(v.Info().Title), "video") {
+			if !strings.Contains(strings.ToLower(v.Info().Title), "music video") {
 				track = v
 				break
 			}
