@@ -50,7 +50,7 @@ func AddCommands(cs ...Command) {
 		Commands[c.Create.Name] = c
 
 		if _, err := Client.Rest().CreateGuildCommand(Client.ApplicationID(), config.DevGuildID, c.Create); err != nil {
-			log.L.Fatal("failed to add command: ", zap.Error(err))
+			log.L.Fatal("failed to add command", zap.Error(err))
 		}
 	}
 }

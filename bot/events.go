@@ -43,7 +43,7 @@ func OnComponentInteraction(re *events.ComponentInteractionCreate) {
 	if err := bt.Handler(ctx, ev, msg); err != nil {
 		log.L.Warn("button handler failed", zap.String("id", query), zap.Error(err))
 		if err := ev.CreateMessage(discord.NewMessageCreateBuilder().SetEmbeds(embeds.Error()).Build()); err != nil {
-			log.L.Warn("failed to send failiure acknowledgement: ", zap.Error(err))
+			log.L.Warn("failed to send failiure acknowledgement", zap.Error(err))
 		}
 	}
 
@@ -54,7 +54,7 @@ func OnComponentInteraction(re *events.ComponentInteractionCreate) {
 
 func OnApplicationCommandInteraction(re *events.ApplicationCommandInteractionCreate) {
 	if err := re.DeferCreateMessage(false); err != nil {
-		log.L.Warn("failed to send command acknowledgement: ", zap.Error(err))
+		log.L.Warn("failed to send command acknowledgement", zap.Error(err))
 		return
 	}
 
@@ -74,7 +74,7 @@ func OnApplicationCommandInteraction(re *events.ApplicationCommandInteractionCre
 	if err := c.Handler(ctx, ev, msg); err != nil {
 		log.L.Warn("button handler failed", zap.String("command", name), zap.Error(err))
 		if err := ev.UpdateMessage(discord.NewMessageUpdateBuilder().SetEmbeds(embeds.Error()).Build()); err != nil {
-			log.L.Warn("failed to send failiure acknowledgement: ", zap.Error(err))
+			log.L.Warn("failed to send failiure acknowledgement", zap.Error(err))
 		}
 		return
 	}
