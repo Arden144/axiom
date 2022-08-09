@@ -6,16 +6,16 @@ import (
 	"go.uber.org/zap"
 )
 
-type eventListener struct {
+type EventListener struct {
 	lavalink.PlayerEventAdapter
 	player Player
 }
 
-func newListener(player Player) eventListener {
-	return eventListener{player: player}
+func newListener(player Player) *EventListener {
+	return &EventListener{player: player}
 }
 
-func (l *eventListener) OnTrackEnd(_ lavalink.Player, track lavalink.AudioTrack, endReason lavalink.AudioTrackEndReason) {
+func (l *EventListener) OnTrackEnd(_ lavalink.Player, track lavalink.AudioTrack, endReason lavalink.AudioTrackEndReason) {
 	if !endReason.MayStartNext() {
 		return
 	}
