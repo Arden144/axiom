@@ -48,7 +48,7 @@ func (p *Player) Next() error {
 	if track, ok := p.Dequeue(); ok {
 		return p.Play(track)
 	}
-	return nil
+	return p.Stop()
 }
 
 func (p *Player) Playing() bool {

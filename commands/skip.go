@@ -22,12 +22,8 @@ var Skip = bot.Command{
 			return nil
 		}
 
-		if err := player.Stop(); err != nil {
-			return fmt.Errorf("failed to stop: %w", err)
-		}
-
 		if err := player.Next(); err != nil {
-			return fmt.Errorf("failed to play: %w", err)
+			return fmt.Errorf("failed to play next: %w", err)
 		}
 
 		msg.SetContent("skipped")
