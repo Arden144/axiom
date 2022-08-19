@@ -25,7 +25,11 @@ var (
 )
 
 func init() {
-	logger, err := zap.NewProduction()
+	config := zap.NewProductionConfig()
+	config.OutputPaths = []string{"stdout"}
+	config.ErrorOutputPaths = []string{"stderr"}
+
+	logger, err := config.Build()
 	if err != nil {
 		log.Fatalf("failed to initialize logger: %v", err)
 	}

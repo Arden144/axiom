@@ -3,6 +3,8 @@ package main
 import (
 	"os"
 
+	_ "github.com/arden144/axiom/web"
+
 	"github.com/arden144/axiom/bot"
 	"github.com/arden144/axiom/buttons"
 	"github.com/arden144/axiom/commands"

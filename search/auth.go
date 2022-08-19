@@ -34,10 +34,11 @@ func authorize() {
 		Post(AUTH)
 
 	if err != nil {
-		log.L.Fatal("failed to get spotify token", zap.Error(err))
+		log.L.Fatal("failed to renew spotify token", zap.Error(err))
 	}
 
 	client.SetCommonBearerAuthToken(result.AccessToken)
+	log.L.Info("spotify token renewed", zap.Int("expires_in", result.ExpiresIn))
 
 	time.AfterFunc(time.Duration(result.ExpiresIn-60)*time.Second, authorize)
 }

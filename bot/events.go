@@ -17,7 +17,7 @@ func OnReady(ev *events.Ready) {
 	defer cancel()
 
 	Client.SetPresence(ctx, gateway.NewPresence(discord.ActivityTypeListening, "bangers", "", discord.OnlineStatusOnline, false))
-	log.L.Info("ready", zap.String("username", ev.User.Username), zap.String("discriminator", ev.User.Discriminator))
+	log.L.Info("bot ready", zap.String("username", ev.User.Username), zap.String("discriminator", ev.User.Discriminator))
 }
 
 func OnComponentInteraction(re *events.ComponentInteractionCreate) {

@@ -28,6 +28,14 @@ func (q *Queue) Dequeue() (lavalink.AudioTrack, bool) {
 	return v.(lavalink.AudioTrack), true
 }
 
+func (q *Queue) Remaining() lavalink.Duration {
+	d := lavalink.Duration(0)
+	for e := q.Front(); e != nil; e = e.Next() {
+		d += e.Value.(lavalink.AudioTrack).Info().Length
+	}
+	return d
+}
+
 func (q *Queue) Clear() {
 	q.Init()
 }

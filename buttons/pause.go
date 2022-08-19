@@ -29,7 +29,7 @@ var Pause = bot.Button{
 			return fmt.Errorf("failed to pause: %w", err)
 		}
 
-		msg.SetEmbeds(embeds.Pause(player.PlayingTrack().Info()))
+		msg.SetEmbeds(embeds.Pause(player.PlayingTrack().Info(), player.PlayingTrack().Info().Length-player.Position()))
 		return nil
 	},
 }

@@ -65,6 +65,8 @@ var Play = bot.Command{
 		if player.Playing() {
 			player.Enqueue(track)
 			msg.SetContent(fmt.Sprint("Queued ", track.Info().Title))
+			length := player.PlayingTrack().Info().Length - player.Position() + player.Remaining()
+			msg.SetEmbeds(embeds.Queue(track.Info(), length))
 		} else {
 			if err := player.Play(track); err != nil {
 				return fmt.Errorf("failed to play: %w", err)

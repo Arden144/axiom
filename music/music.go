@@ -1,6 +1,8 @@
 package music
 
 import (
+	"fmt"
+
 	"github.com/arden144/axiom/bot"
 	"github.com/arden144/axiom/config"
 	"github.com/arden144/axiom/log"
@@ -21,6 +23,8 @@ func init() {
 	if err != nil {
 		log.L.Fatal("failed to connect to lavalink", zap.Error(err))
 	}
+
+	log.L.Info("connected to lavalink", zap.String("address", fmt.Sprintf("%v:%v", config.Lavalink.Host, config.Lavalink.Port)))
 }
 
 func GetPlayer(guildID snowflake.ID) Player {

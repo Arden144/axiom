@@ -46,6 +46,9 @@ func (p *Player) Search(ctx context.Context, name string) ([]lavalink.AudioTrack
 
 func (p *Player) Next() error {
 	if track, ok := p.Dequeue(); ok {
+		if err := p.Pause(false); err != nil {
+			return err
+		}
 		return p.Play(track)
 	}
 	return p.Stop()
