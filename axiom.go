@@ -18,7 +18,7 @@ func main() {
 
 	// bot.ClearCommands()
 	bot.AddCommands(commands.Play, commands.Skip, commands.Disconnect, commands.Pause, commands.Resume)
-	bot.AddButtons(buttons.Pause)
+	bot.AddButtons(buttons.Toggle)
 
 	utility.OnSignal(os.Interrupt)
 }

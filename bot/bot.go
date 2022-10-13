@@ -24,7 +24,10 @@ func init() {
 	var err error
 	Client, err = disgo.New(config.Token,
 		bot.WithLogger(log.W),
-		bot.WithGatewayConfigOpts(gateway.WithIntents(gateway.IntentGuildVoiceStates)),
+		bot.WithGatewayConfigOpts(
+			gateway.WithIntents(gateway.IntentGuildVoiceStates),
+			gateway.WithPresenceOpts(gateway.WithListeningActivity("bangers")),
+		),
 		bot.WithCacheConfigOpts(cache.WithCacheFlags(cache.FlagVoiceStates)),
 		bot.WithEventListenerFunc(OnReady),
 		bot.WithEventListenerFunc(OnComponentInteraction),

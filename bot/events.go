@@ -8,15 +8,10 @@ import (
 	"github.com/arden144/axiom/log"
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
-	"github.com/disgoorg/disgo/gateway"
 	"go.uber.org/zap"
 )
 
 func OnReady(ev *events.Ready) {
-	ctx, cancel := context.WithTimeout(Ctx, 5*time.Second)
-	defer cancel()
-
-	Client.SetPresence(ctx, gateway.NewPresence(discord.ActivityTypeListening, "bangers", "", discord.OnlineStatusOnline, false))
 	log.L.Info("bot ready", zap.String("username", ev.User.Username), zap.String("discriminator", ev.User.Discriminator))
 }
 

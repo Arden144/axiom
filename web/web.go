@@ -6,12 +6,17 @@ import (
 	"github.com/arden144/axiom/log"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/template/jet"
 	"go.uber.org/zap"
 )
+
+// TODO: Write new wrapper, this one is ancient
+var engine = jet.New("./views", ".jet")
 
 var app = fiber.New(fiber.Config{
 	JSONEncoder:           json.Marshal,
 	JSONDecoder:           json.Unmarshal,
+	Views:                 engine,
 	DisableStartupMessage: true,
 })
 
