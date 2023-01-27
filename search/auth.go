@@ -16,25 +16,42 @@ type authorization struct {
 	ExpiresIn   int    `json:"expires_in"`
 }
 
+type failiure struct {
+	error struct {
+		status  int
+		message string
+	}
+}
+
 func init() {
 	authorize()
 }
 
 func authorize() {
 	var result authorization
+	var fail failiure
 
 	ctx, cancel := context.WithTimeout(bot.Ctx, 10*time.Second)
 	defer cancel()
 
-	_, err := client.R().
+	res, err := client.R().
 		SetContext(ctx).
 		SetFormData(map[string]string{"grant_type": "client_credentials"}).
 		SetBasicAuth(config.Spotify.ClientID, config.Spotify.ClientSecret).
 		SetResult(&result).
+		SetError(&fail).
 		Post(AUTH)
 
-	if err != nil {
-		log.L.Fatal("failed to renew spotify token", zap.Error(err))
+	if err != nil || res.IsError() {
+		log.L.Error(
+			"failed to renew spotify token",
+			zap.Int("status", fail.error.status),
+			zap.String("message", fail.error.message),
+			zap.Error(err),
+		)
+		log.L.Info("trying to renew in 30s")
+		time.AfterFunc(30*time.Second, authorize)
+		return
 	}
 
 	client.SetCommonBearerAuthToken(result.AccessToken)
