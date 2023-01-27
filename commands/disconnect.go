@@ -22,7 +22,7 @@ var Disconnect = bot.Command{
 			return nil
 		}
 
-		if err := bot.Client.Disconnect(ctx, *e.GuildID()); err != nil {
+		if err := bot.Client.UpdateVoiceState(ctx, *e.GuildID(), nil, false, false); err != nil {
 			return fmt.Errorf("failed to disconnect: %w", err)
 		}
 		player.Clear()

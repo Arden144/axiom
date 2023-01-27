@@ -28,14 +28,14 @@ var Play = bot.Command{
 		song := e.SlashCommandInteractionData().String("song")
 		player := music.GetPlayer(*e.GuildID())
 
-		voice, ok := bot.Client.Caches().VoiceStates().Get(*e.GuildID(), e.User().ID)
+		voice, ok := bot.Client.Caches().VoiceState(*e.GuildID(), e.User().ID)
 		if !ok {
 			msg.SetContent("Not in a voice channel")
 			return nil
 		}
 
 		if player.ChannelID() != voice.ChannelID {
-			if err := bot.Client.Connect(ctx, *e.GuildID(), *voice.ChannelID); err != nil {
+			if err := bot.Client.UpdateVoiceState(ctx, *e.GuildID(), voice.ChannelID, false, true); err != nil {
 				return fmt.Errorf("failed to join channel: %w", err)
 			}
 		}

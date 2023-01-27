@@ -28,7 +28,7 @@ func init() {
 			gateway.WithIntents(gateway.IntentGuildVoiceStates),
 			gateway.WithPresenceOpts(gateway.WithListeningActivity("bangers")),
 		),
-		bot.WithCacheConfigOpts(cache.WithCacheFlags(cache.FlagVoiceStates)),
+		bot.WithCacheConfigOpts(cache.WithCaches(cache.FlagVoiceStates)),
 		bot.WithEventListenerFunc(OnReady),
 		bot.WithEventListenerFunc(OnComponentInteraction),
 		bot.WithEventListenerFunc(OnApplicationCommandInteraction),

@@ -67,7 +67,7 @@ func OnApplicationCommandInteraction(re *events.ApplicationCommandInteractionCre
 	defer cancel()
 
 	if err := c.Handler(ctx, ev, msg); err != nil {
-		log.L.Warn("button handler failed", zap.String("command", name), zap.Error(err))
+		log.L.Warn("command handler failed", zap.String("command", name), zap.Error(err))
 		if err := ev.UpdateMessage(discord.NewMessageUpdateBuilder().SetEmbeds(embeds.Error()).Build()); err != nil {
 			log.L.Warn("failed to send failiure acknowledgement", zap.Error(err))
 		}
