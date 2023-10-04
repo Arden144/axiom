@@ -4,11 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"regexp"
 
 	"github.com/disgoorg/disgolink/lavalink"
 )
 
 var ErrNotFound = errors.New("track not found")
+var ErrInvalidUrl = errors.New("invalid url")
+var identifierRegex = regexp.MustCompile("^.*(?:youtu.be\\/|v\\/|e\\/|u\\/\\w+\\/|embed\\/|v=)([^#\\&\\?]*).*")
 
 type Player struct {
 	lavalink.Player
@@ -42,6 +45,41 @@ func (p *Player) Search(ctx context.Context, name string) ([]lavalink.AudioTrack
 	}
 
 	return tracks, nil
+}
+
+func (p *Player) ResolveUrl(ctx context.Context, url string) (lavalink.AudioTrack, error) {
+	l := p.Node().Lavalink()
+	c := l.BestRestClient()
+
+	submatches := identifierRegex.FindStringSubmatch(url)
+	if len(submatches) != 2 {
+		return nil, ErrInvalidUrl
+	}
+	identifier := submatches[1]
+
+	result, err := c.LoadItem(ctx, identifier)
+	if err != nil {
+		return nil, err
+	}
+
+	switch result.LoadType {
+	case lavalink.LoadTypeNoMatches:
+		return nil, ErrNotFound
+
+	case lavalink.LoadTypeLoadFailed:
+		return nil, *result.Exception
+	}
+
+	if len(result.Tracks) != 1 {
+		return nil, ErrNotFound
+	}
+
+	track, err := l.DecodeTrack(result.Tracks[0].Track)
+	if err != nil {
+		return nil, err
+	}
+
+	return track, nil
 }
 
 func (p *Player) Next() error {

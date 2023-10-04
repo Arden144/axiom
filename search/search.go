@@ -53,7 +53,7 @@ func Search(ctx context.Context, query string) (*Track, error) {
 	_, err := client.R().
 		SetContext(ctx).
 		SetQueryParams(params).
-		SetResult(&result).
+		SetSuccessResult(&result).
 		Get(SEARCH)
 
 	if err != nil {

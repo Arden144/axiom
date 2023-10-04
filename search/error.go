@@ -25,13 +25,13 @@ func init() {
 			}
 			return nil
 		}).
-		SetCommonError(&SearchError{}).
+		SetCommonErrorResult(&SearchError{}).
 		OnAfterResponse(func(c *req.Client, resp *req.Response) error {
-			if err, ok := resp.Error().(*SearchError); ok {
+			if err, ok := resp.ErrorResult().(*SearchError); ok {
 				return err
 			}
 
-			if !resp.IsSuccess() {
+			if !resp.IsSuccessState() {
 				return fmt.Errorf("Spotify Bad Response: %v", resp.Dump())
 			}
 

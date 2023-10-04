@@ -15,7 +15,7 @@ func main() {
 	defer bot.Client.Close(bot.Ctx)
 
 	// bot.ClearCommands()
-	bot.AddCommands(commands.Play, commands.Skip, commands.Disconnect, commands.Pause, commands.Resume)
+	bot.AddCommands(commands.Play, commands.PlayLink, commands.Skip, commands.Disconnect, commands.Pause, commands.Resume)
 	bot.AddButtons(buttons.Toggle)
 
 	utility.OnSignal(os.Interrupt)

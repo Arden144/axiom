@@ -3,29 +3,27 @@ package commands
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/arden144/axiom/bot"
 	"github.com/arden144/axiom/embeds"
 	"github.com/arden144/axiom/music"
-	"github.com/arden144/axiom/search"
 	"github.com/disgoorg/disgo/discord"
 )
 
-var Play = bot.Command{
+var PlayLink = bot.Command{
 	Create: bot.SlashCommand{
-		Name:        "play",
+		Name:        "playlink",
 		Description: "Play a song in your current voice channel",
 		Options: []discord.ApplicationCommandOption{
 			discord.ApplicationCommandOptionString{
-				Name:        "song",
-				Description: "The name of the song you'd like to play",
+				Name:        "url",
+				Description: "A link to the YouTube video you'd like to play",
 				Required:    true,
 			},
 		},
 	},
 	Handler: func(ctx context.Context, e bot.CommandEvent, msg *discord.MessageUpdateBuilder) error {
-		song := e.SlashCommandInteractionData().String("song")
+		url := e.SlashCommandInteractionData().String("url")
 		player := music.GetPlayer(*e.GuildID())
 
 		voice, ok := bot.Client.Caches().VoiceState(*e.GuildID(), e.User().ID)
@@ -40,26 +38,12 @@ var Play = bot.Command{
 			}
 		}
 
-		info, err := search.Search(ctx, song)
-		if err != nil {
-			return fmt.Errorf("search failed: %w", err)
-		}
-
-		tracks, err := player.Search(ctx, fmt.Sprintf("%v - %v", info.Artists[0].Name, info.Name))
+		track, err := player.ResolveUrl(ctx, url)
 		if err == music.ErrNotFound {
 			msg.SetContent("not found")
 			return nil
 		} else if err != nil {
-			return fmt.Errorf("failed to search: %w", err)
-		}
-
-		track := tracks[0]
-		for _, v := range tracks {
-			title := strings.ToLower(v.Info().Title)
-			if !strings.Contains(title, "official video") && !strings.Contains(title, "music video") {
-				track = v
-				break
-			}
+			return fmt.Errorf("failed to resolve youtube url: %w", err)
 		}
 
 		if player.Playing() {

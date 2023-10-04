@@ -38,11 +38,11 @@ func authorize() {
 		SetContext(ctx).
 		SetFormData(map[string]string{"grant_type": "client_credentials"}).
 		SetBasicAuth(config.Spotify.ClientID, config.Spotify.ClientSecret).
-		SetResult(&result).
-		SetError(&fail).
+		SetSuccessResult(&result).
+		SetErrorResult(&fail).
 		Post(AUTH)
 
-	if err != nil || res.IsError() {
+	if err != nil || res.IsErrorState() {
 		log.L.Error(
 			"failed to renew spotify token",
 			zap.Int("status", fail.error.status),
