@@ -12,17 +12,17 @@ import (
 var Refresh = bot.Command{
 	Create: bot.SlashCommand{
 		Name:        "refresh",
-		Description: "Clears and readds all commands to a server.",
+		Description: "Clears and reads all commands to a server.",
 		Options: []discord.ApplicationCommandOption{
 			discord.ApplicationCommandOptionString{
-				Name:        "GuildID",
+				Name:        "guildID",
 				Description: "The ID of the server to refresh.",
 				Required:    true,
 			},
 		},
 	},
 	Handler: func(ctx context.Context, e bot.CommandEvent, msg *discord.MessageUpdateBuilder) error {
-		guildIDString := e.SlashCommandInteractionData().String("GuildID")
+		guildIDString := e.SlashCommandInteractionData().String("guildID")
 		guildID, err := snowflake.Parse(guildIDString)
 		if err != nil {
 			msg.SetContent("Not a valid Guild ID.")
