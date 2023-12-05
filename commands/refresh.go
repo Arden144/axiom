@@ -15,14 +15,14 @@ var Refresh = bot.Command{
 		Description: "Clears and reads all commands to a server.",
 		Options: []discord.ApplicationCommandOption{
 			discord.ApplicationCommandOptionString{
-				Name:        "guildID",
+				Name:        "guildid",
 				Description: "The ID of the server to refresh.",
 				Required:    true,
 			},
 		},
 	},
 	Handler: func(ctx context.Context, e bot.CommandEvent, msg *discord.MessageUpdateBuilder) error {
-		guildIDString := e.SlashCommandInteractionData().String("guildID")
+		guildIDString := e.SlashCommandInteractionData().String("guildid")
 		guildID, err := snowflake.Parse(guildIDString)
 		if err != nil {
 			msg.SetContent("Not a valid Guild ID.")
