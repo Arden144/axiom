@@ -44,19 +44,19 @@ func init() {
 		log.L.Fatal("failed to configure bot: ", zap.Error(err))
 	}
 
-	Link = disgolink.New(Client.ID(),
+	Link = disgolink.New(Client.ApplicationID(),
 		disgolink.WithListenerFunc(OnTrackEnd),
 	)
 
-	_, err = Link.AddNode(Ctx, config.Lavalink)
+	ctx, cancel := context.WithTimeout(Ctx, 10*time.Second)
+	defer cancel()
+
+	_, err = Link.AddNode(ctx, config.Lavalink)
 	if err != nil {
 		log.L.Fatal("failed to connect to lavalink", zap.Error(err))
 	}
 
 	log.L.Info("connected to lavalink", zap.String("address", config.Lavalink.Address))
-
-	ctx, cancel := context.WithTimeout(Ctx, 10*time.Second)
-	defer cancel()
 
 	if err := Client.OpenGateway(ctx); err != nil {
 		log.L.Fatal("failed to start bot: ", zap.Error(err))
