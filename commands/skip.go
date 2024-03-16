@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/arden144/axiom/bot"
-	"github.com/arden144/axiom/music"
 	"github.com/disgoorg/disgo/discord"
 )
 
@@ -15,7 +14,7 @@ var Skip = bot.Command{
 		Description: "skip",
 	},
 	Handler: func(ctx context.Context, e bot.CommandEvent, msg *discord.MessageUpdateBuilder) error {
-		player := music.GetPlayer(*e.GuildID())
+		player := bot.GetPlayer(*e.GuildID())
 
 		if !player.Playing() {
 			msg.SetContent("nothing to skip")

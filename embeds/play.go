@@ -5,10 +5,10 @@ import (
 
 	"github.com/arden144/axiom/color"
 	"github.com/disgoorg/disgo/discord"
-	"github.com/disgoorg/disgolink/lavalink"
+	"github.com/disgoorg/disgolink/v3/lavalink"
 )
 
-func Play(track lavalink.AudioTrackInfo) discord.Embed {
+func Play(track lavalink.TrackInfo) discord.Embed {
 	embed := discord.NewEmbedBuilder()
 	embed.SetColor(color.Blue)
 	embed.SetAuthorName("Now Playing")

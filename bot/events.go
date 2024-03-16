@@ -8,6 +8,8 @@ import (
 	"github.com/arden144/axiom/log"
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
+	"github.com/disgoorg/disgolink/v3/disgolink"
+	"github.com/disgoorg/disgolink/v3/lavalink"
 	"go.uber.org/zap"
 )
 
@@ -76,5 +78,28 @@ func OnApplicationCommandInteraction(re *events.ApplicationCommandInteractionCre
 
 	if err := ev.UpdateMessage(msg.Build()); err != nil {
 		log.L.Warn("failed to send response", zap.String("command", name), zap.Error(err))
+	}
+}
+
+func OnVoiceStateUpdate(event *events.GuildVoiceStateUpdate) {
+	if event.VoiceState.UserID != Client.ApplicationID() {
+		return
+	}
+	Link.OnVoiceStateUpdate(context.TODO(), event.VoiceState.GuildID, event.VoiceState.ChannelID, event.VoiceState.SessionID)
+}
+
+func OnVoiceServerUpdate(event *events.VoiceServerUpdate) {
+	Link.OnVoiceServerUpdate(context.TODO(), event.GuildID, event.Token, *event.Endpoint)
+}
+
+func OnTrackEnd(player disgolink.Player, event lavalink.TrackEndEvent) {
+	if !event.Reason.MayStartNext() {
+		return
+	}
+
+	p := GetPlayer(player.GuildID())
+
+	if err := p.Next(); err != nil {
+		log.L.Warn("failed to play", zap.Error(err))
 	}
 }

@@ -2,8 +2,10 @@ package log
 
 import (
 	"log"
+	"log/slog"
 
 	"go.uber.org/zap"
+	"go.uber.org/zap/exp/zapslog"
 )
 
 type WrappedLogger struct {
@@ -19,9 +21,10 @@ func (l *WrappedLogger) Tracef(format string, args ...interface{}) {
 }
 
 var (
-	L *zap.Logger
-	S *zap.SugaredLogger
-	W *WrappedLogger
+	L  *zap.Logger
+	S  *zap.SugaredLogger
+	W  *WrappedLogger
+	SL *slog.Logger
 )
 
 func init() {
@@ -36,4 +39,5 @@ func init() {
 	L = logger
 	S = logger.Sugar()
 	W = &WrappedLogger{S}
+	SL = slog.New(zapslog.NewHandler(logger.Core(), nil))
 }

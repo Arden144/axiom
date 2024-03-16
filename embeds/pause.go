@@ -5,10 +5,10 @@ import (
 
 	"github.com/arden144/axiom/color"
 	"github.com/disgoorg/disgo/discord"
-	"github.com/disgoorg/disgolink/lavalink"
+	"github.com/disgoorg/disgolink/v3/lavalink"
 )
 
-func Pause(track lavalink.AudioTrackInfo, remaining lavalink.Duration) discord.Embed {
+func Pause(track lavalink.TrackInfo, remaining lavalink.Duration) discord.Embed {
 	embed := discord.NewEmbedBuilder()
 	embed.SetColor(color.Blue)
 	embed.SetAuthorName("Paused")

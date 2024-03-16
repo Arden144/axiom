@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/arden144/axiom/bot"
-	"github.com/arden144/axiom/music"
 	"github.com/disgoorg/disgo/discord"
 )
 
@@ -15,9 +14,9 @@ var Disconnect = bot.Command{
 		Description: "disconnect",
 	},
 	Handler: func(ctx context.Context, e bot.CommandEvent, msg *discord.MessageUpdateBuilder) error {
-		player := music.GetPlayer(*e.GuildID())
+		player := bot.GetPlayer(*e.GuildID())
 
-		if !player.Connected() {
+		if !player.State().Connected {
 			msg.SetContent("not connected")
 			return nil
 		}

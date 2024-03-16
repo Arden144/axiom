@@ -10,6 +10,7 @@ import (
 	"github.com/arden144/axiom/music"
 	"github.com/arden144/axiom/search"
 	"github.com/disgoorg/disgo/discord"
+	"github.com/disgoorg/disgolink/v3/lavalink"
 )
 
 var Play = bot.Command{
@@ -26,7 +27,7 @@ var Play = bot.Command{
 	},
 	Handler: func(ctx context.Context, e bot.CommandEvent, msg *discord.MessageUpdateBuilder) error {
 		song := e.SlashCommandInteractionData().String("song")
-		player := music.GetPlayer(*e.GuildID())
+		player := bot.GetPlayer(*e.GuildID())
 
 		voice, ok := bot.Client.Caches().VoiceState(*e.GuildID(), e.User().ID)
 		if !ok {
@@ -55,7 +56,7 @@ var Play = bot.Command{
 
 		track := tracks[0]
 		for _, v := range tracks {
-			title := strings.ToLower(v.Info().Title)
+			title := strings.ToLower(v.Info.Title)
 			if !strings.Contains(title, "official video") && !strings.Contains(title, "music video") {
 				track = v
 				break
@@ -63,14 +64,14 @@ var Play = bot.Command{
 		}
 
 		if player.Playing() {
-			length := player.PlayingTrack().Info().Length - player.Position() + player.Remaining()
+			length := player.Track().Info.Length - player.Position() + player.Remaining()
 			player.Enqueue(track)
-			msg.SetEmbeds(embeds.Queue(track.Info(), length))
+			msg.SetEmbeds(embeds.Queue(track.Info, length))
 		} else {
-			if err := player.Play(track); err != nil {
+			if err := player.Update(ctx, lavalink.WithTrack(track)); err != nil {
 				return fmt.Errorf("failed to play: %w", err)
 			}
-			msg.SetEmbeds(embeds.Play(track.Info()))
+			msg.SetEmbeds(embeds.Play(track.Info))
 		}
 
 		msg.AddActionRow(discord.NewButton(discord.ButtonStylePrimary, "⏯️", "toggle", ""))

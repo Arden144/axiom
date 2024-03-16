@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/arden144/axiom/bot"
-	"github.com/arden144/axiom/music"
 	"github.com/disgoorg/disgo/discord"
+	"github.com/disgoorg/disgolink/v3/lavalink"
 )
 
 var Resume = bot.Command{
@@ -14,8 +14,8 @@ var Resume = bot.Command{
 		Name:        "resume",
 		Description: "resume",
 	},
-	Handler: func(_ context.Context, e bot.CommandEvent, msg *discord.MessageUpdateBuilder) error {
-		player := music.GetPlayer(*e.GuildID())
+	Handler: func(ctx context.Context, e bot.CommandEvent, msg *discord.MessageUpdateBuilder) error {
+		player := bot.GetPlayer(*e.GuildID())
 
 		if !player.Playing() {
 			msg.SetContent("nothing to resume")
@@ -27,7 +27,7 @@ var Resume = bot.Command{
 			return nil
 		}
 
-		if err := player.Pause(false); err != nil {
+		if err := player.Update(ctx, lavalink.WithPaused(false)); err != nil {
 			return fmt.Errorf("failed to resume: %w", err)
 		}
 

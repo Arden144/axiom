@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/arden144/axiom/log"
-	"github.com/disgoorg/disgolink/lavalink"
+	"github.com/disgoorg/disgolink/v3/disgolink"
 	"github.com/disgoorg/snowflake/v2"
 	"go.uber.org/zap"
 )
@@ -13,7 +13,7 @@ import (
 const path = "config.json"
 
 var (
-	Lavalink   lavalink.NodeConfig
+	Lavalink   disgolink.NodeConfig
 	Spotify    SpotifyConfig
 	Token      string
 	DevGuildID snowflake.ID
@@ -25,10 +25,10 @@ type SpotifyConfig struct {
 }
 
 type config struct {
-	Lavalink   lavalink.NodeConfig `json:"lavalink"`
-	Spotify    SpotifyConfig       `json:"spotify"`
-	Token      string              `json:"token"`
-	DevGuildID snowflake.ID        `json:"devGuildId"`
+	Lavalink   disgolink.NodeConfig `json:"lavalink"`
+	Spotify    SpotifyConfig        `json:"spotify"`
+	Token      string               `json:"token"`
+	DevGuildID snowflake.ID         `json:"devGuildId"`
 }
 
 func init() {
