@@ -74,7 +74,7 @@ var Play = bot.Command{
 			msg.SetEmbeds(embeds.Play(track.Info))
 		}
 
-		msg.AddActionRow(discord.NewButton(discord.ButtonStylePrimary, "⏯️", "toggle", ""))
+		msg.AddActionRow(discord.NewButton(discord.ButtonStylePrimary, "⏯️", "toggle", "", 0))
 		return nil
 	},
 }

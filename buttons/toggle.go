@@ -32,7 +32,7 @@ var Toggle = bot.Button{
 			msg.SetEmbeds(embeds.Pause(player.Track().Info, player.Track().Info.Length-player.Position()))
 		}
 
-		msg.AddActionRow(discord.NewButton(discord.ButtonStylePrimary, "⏯️", "toggle", ""))
+		msg.AddActionRow(discord.NewButton(discord.ButtonStylePrimary, "⏯️", "toggle", "", 0))
 		return nil
 	},
 }
