@@ -48,7 +48,7 @@ func init() {
 		disgolink.WithListenerFunc(OnTrackEnd),
 	)
 
-	ctx, cancel := context.WithTimeout(Ctx, 10*time.Second)
+	ctx, cancel := context.WithTimeout(Ctx, 5*time.Minute)
 	defer cancel()
 
 	_, err = Link.AddNode(ctx, config.Lavalink)

@@ -10,7 +10,7 @@ import (
 	"go.uber.org/zap"
 )
 
-const path = "config.json"
+const path = "config/config.json"
 
 var (
 	Lavalink   disgolink.NodeConfig

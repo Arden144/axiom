@@ -1,0 +1,20 @@
+# fly.toml app configuration file generated for axiom-dc on 2024-09-12T18:25:20-07:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'axiom-dc'
+primary_region = 'sea'
+
+[build]
+[build.args]
+GO_VERSION = '1.22'
+
+[[vm]]
+size = 'shared-cpu-1x'
+memory = "512MB"
+
+[mounts]
+source = "axiom_dc_data"
+destination = "/app/config"
+initial_size = "1GB"

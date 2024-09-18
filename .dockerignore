@@ -1,0 +1,8 @@
+# flyctl launch added from .gitignore
+**/.DS_Store
+**/config.json
+**/application.yml
+.dockerignore
+.gitignore
+Dockerfile
+fly.toml
