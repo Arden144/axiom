@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/arden144/axiom/bot"
 	"github.com/arden144/axiom/config"
 	"github.com/arden144/axiom/log"
 	"go.uber.org/zap"
@@ -31,7 +30,8 @@ func authorize() {
 	var result authorization
 	var fail failiure
 
-	ctx, cancel := context.WithTimeout(bot.Ctx, 10*time.Second)
+	// TODO: Use the bot context
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	res, err := client.R().

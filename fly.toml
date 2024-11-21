@@ -4,7 +4,7 @@
 #
 
 app = 'axiom-dc'
-primary_region = 'sea'
+primary_region = 'yyz'
 
 [build]
 [build.args]
