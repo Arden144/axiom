@@ -1,0 +1,6 @@
+#!/bin/sh
+
+cp -r /app/config/plugins /app/plugins
+cp /app/config/application.yml /app/application.yml
+
+exec java -jar /app/Lavalink.jar
