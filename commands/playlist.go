@@ -26,13 +26,13 @@ var Playlist = bot.Command{Create: bot.SlashCommand{
 			Required:    true,
 		},
 	},
-}, Handler: func(ctx context.Context, e bot.CommandEvent, msg *discord.MessageUpdateBuilder) error {
+}, Handler: func(ctx context.Context, e bot.CommandEvent, msg *discord.MessageUpdate) error {
 	name := e.SlashCommandInteractionData().String("name")
 	player := bot.GetPlayer(*e.GuildID())
 
-	voice, ok := bot.Client.Caches().VoiceState(*e.GuildID(), e.User().ID)
+	voice, ok := bot.Client.Caches.VoiceState(*e.GuildID(), e.User().ID)
 	if !ok {
-		msg.SetContent("Not in a voice channel")
+		*msg = msg.WithContent("Not in a voice channel")
 		return nil
 	}
 
@@ -63,7 +63,7 @@ var Playlist = bot.Command{Create: bot.SlashCommand{
 		log.L.Warn("some tracks failed to play", zap.Error(errors.Join(errs...)))
 	}
 
-	msg.SetEmbeds(embeds.Playlist(*playlist, len(playlist.Tracks.Items)-len(errs)))
+	*msg = msg.WithEmbeds(embeds.Playlist(*playlist, len(playlist.Tracks.Items)-len(errs)))
 	msg.AddActionRow(discord.NewButton(discord.ButtonStylePrimary, "⏯️", "toggle", "", 0))
 	return nil
 }}

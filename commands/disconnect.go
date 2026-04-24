@@ -13,11 +13,11 @@ var Disconnect = bot.Command{
 		Name:        "disconnect",
 		Description: "disconnect",
 	},
-	Handler: func(ctx context.Context, e bot.CommandEvent, msg *discord.MessageUpdateBuilder) error {
+	Handler: func(ctx context.Context, e bot.CommandEvent, msg *discord.MessageUpdate) error {
 		player := bot.GetPlayer(*e.GuildID())
 
 		if !player.State().Connected {
-			msg.SetContent("not connected")
+			*msg = msg.WithContent("not connected")
 			return nil
 		}
 
@@ -26,7 +26,7 @@ var Disconnect = bot.Command{
 		}
 		player.Clear()
 
-		msg.SetContent("disconnected")
+		*msg = msg.WithContent("disconnected")
 		return nil
 	},
 }

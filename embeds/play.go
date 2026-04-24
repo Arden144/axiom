@@ -9,14 +9,13 @@ import (
 )
 
 func Play(track lavalink.TrackInfo) discord.Embed {
-	embed := discord.NewEmbedBuilder()
-	embed.SetColor(color.Blue)
-	embed.SetAuthorName("Now Playing")
-	embed.SetAuthorIcon("https://github.com/material-icons/material-icons-png/raw/master/png/white/play_circle_outline/baseline-4x.png")
-	embed.SetTitle(track.Title)
-	embed.SetURL(*track.URI)
-	embed.AddField("Channel", track.Author, true)
-	embed.AddField("Duration", track.Length.String(), true)
-	embed.SetThumbnail(fmt.Sprintf("https://img.youtube.com/vi/%v/mqdefault.jpg", track.Identifier))
-	return embed.Build()
+	return discord.NewEmbed().
+		WithColor(color.Blue).
+		WithAuthorName("Now Playing").
+		WithAuthorIcon("https://github.com/material-icons/material-icons-png/raw/master/png/white/play_circle_outline/baseline-4x.png").
+		WithTitle(track.Title).
+		WithURL(*track.URI).
+		AddField("Channel", track.Author, true).
+		AddField("Duration", track.Length.String(), true).
+		WithThumbnail(fmt.Sprintf("https://img.youtube.com/vi/%v/mqdefault.jpg", track.Identifier))
 }

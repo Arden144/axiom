@@ -33,18 +33,18 @@ func OnComponentInteraction(re *events.ComponentInteractionCreate) {
 
 	ev := ButtonEvent{re, ButtonData{params}}
 
-	msg := discord.NewMessageCreateBuilder()
+	msg := discord.NewMessageCreate()
 	ctx, cancel := context.WithTimeout(Ctx, 5*time.Second)
 	defer cancel()
 
-	if err := bt.Handler(ctx, ev, msg); err != nil {
+	if err := bt.Handler(ctx, ev, &msg); err != nil {
 		log.L.Warn("button handler failed", zap.String("id", query), zap.Error(err))
-		if err := ev.CreateMessage(discord.NewMessageCreateBuilder().SetEmbeds(embeds.Error()).Build()); err != nil {
+		if err := ev.CreateMessage(discord.NewMessageCreate().WithEmbeds(embeds.Error())); err != nil {
 			log.L.Warn("failed to send failiure acknowledgement", zap.Error(err))
 		}
 	}
 
-	if err := ev.CreateMessage(msg.Build()); err != nil {
+	if err := ev.CreateMessage(msg); err != nil {
 		log.L.Warn("failed to send response", zap.String("id", query), zap.Error(err))
 	}
 }
@@ -64,25 +64,25 @@ func OnApplicationCommandInteraction(re *events.ApplicationCommandInteractionCre
 		return
 	}
 
-	msg := discord.NewMessageUpdateBuilder()
+	msg := discord.NewMessageUpdate()
 	ctx, cancel := context.WithTimeout(Ctx, 5*time.Second)
 	defer cancel()
 
-	if err := c.Handler(ctx, ev, msg); err != nil {
+	if err := c.Handler(ctx, ev, &msg); err != nil {
 		log.L.Warn("command handler failed", zap.String("command", name), zap.Error(err))
-		if err := ev.UpdateMessage(discord.NewMessageUpdateBuilder().SetEmbeds(embeds.Error()).Build()); err != nil {
+		if err := ev.UpdateMessage(discord.NewMessageUpdate().WithEmbeds(embeds.Error())); err != nil {
 			log.L.Warn("failed to send failiure acknowledgement", zap.Error(err))
 		}
 		return
 	}
 
-	if err := ev.UpdateMessage(msg.Build()); err != nil {
+	if err := ev.UpdateMessage(msg); err != nil {
 		log.L.Warn("failed to send response", zap.String("command", name), zap.Error(err))
 	}
 }
 
 func OnVoiceStateUpdate(event *events.GuildVoiceStateUpdate) {
-	if event.VoiceState.UserID != Client.ApplicationID() {
+	if event.VoiceState.UserID != Client.ApplicationID {
 		return
 	}
 	Link.OnVoiceStateUpdate(context.TODO(), event.VoiceState.GuildID, event.VoiceState.ChannelID, event.VoiceState.SessionID)

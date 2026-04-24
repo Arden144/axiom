@@ -6,10 +6,9 @@ import (
 )
 
 func Error() discord.Embed {
-	embed := discord.NewEmbedBuilder()
-	embed.SetColor(color.Red)
-	embed.SetAuthorName("Failed")
-	embed.SetAuthorIcon("https://github.com/material-icons/material-icons-png/raw/master/png/white/error_outline/baseline-4x.png")
-	embed.SetTitle("Unfortunately, an unexpected error has occured while trying to process your command.")
-	return embed.Build()
+	return discord.NewEmbed().
+		WithColor(color.Red).
+		WithAuthorName("Failed").
+		WithAuthorIcon("https://github.com/material-icons/material-icons-png/raw/master/png/white/error_outline/baseline-4x.png").
+		WithTitle("Unfortunately, an unexpected error has occured while trying to process your command.")
 }

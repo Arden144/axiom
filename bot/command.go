@@ -15,5 +15,5 @@ type CommandEvent struct {
 
 type Command struct {
 	Create  SlashCommand
-	Handler func(context.Context, CommandEvent, *discord.MessageUpdateBuilder) error
+	Handler func(context.Context, CommandEvent, *discord.MessageUpdate) error
 }

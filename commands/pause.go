@@ -15,16 +15,16 @@ var Pause = bot.Command{
 		Name:        "pause",
 		Description: "pause",
 	},
-	Handler: func(ctx context.Context, e bot.CommandEvent, msg *discord.MessageUpdateBuilder) error {
+	Handler: func(ctx context.Context, e bot.CommandEvent, msg *discord.MessageUpdate) error {
 		player := bot.GetPlayer(*e.GuildID())
 
 		if !player.Playing() {
-			msg.SetContent("nothing to pause")
+			*msg = msg.WithContent("nothing to pause")
 			return nil
 		}
 
 		if player.Paused() {
-			msg.SetContent("already paused")
+			*msg = msg.WithContent("already paused")
 			return nil
 		}
 
@@ -32,7 +32,7 @@ var Pause = bot.Command{
 			return fmt.Errorf("failed to pause: %w", err)
 		}
 
-		msg.SetEmbeds(embeds.Pause(player.Track().Info, player.Track().Info.Length-player.Position()))
+		*msg = msg.WithEmbeds(embeds.Pause(player.Track().Info, player.Track().Info.Length-player.Position()))
 		return nil
 	},
 }

@@ -39,5 +39,5 @@ func init() {
 	L = logger
 	S = logger.Sugar()
 	W = &WrappedLogger{S}
-	SL = slog.New(zapslog.NewHandler(logger.Core(), nil))
+	SL = slog.New(zapslog.NewHandler(logger.Core()))
 }

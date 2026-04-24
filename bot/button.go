@@ -18,7 +18,7 @@ type ButtonEvent struct {
 
 type Button struct {
 	Query   string
-	Handler func(context.Context, ButtonEvent, *discord.MessageCreateBuilder) error
+	Handler func(context.Context, ButtonEvent, *discord.MessageCreate) error
 }
 
 type ButtonData struct {

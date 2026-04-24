@@ -14,16 +14,16 @@ var Resume = bot.Command{
 		Name:        "resume",
 		Description: "resume",
 	},
-	Handler: func(ctx context.Context, e bot.CommandEvent, msg *discord.MessageUpdateBuilder) error {
+	Handler: func(ctx context.Context, e bot.CommandEvent, msg *discord.MessageUpdate) error {
 		player := bot.GetPlayer(*e.GuildID())
 
 		if !player.Playing() {
-			msg.SetContent("nothing to resume")
+			*msg = msg.WithContent("nothing to resume")
 			return nil
 		}
 
 		if !player.Paused() {
-			msg.SetContent("already playing")
+			*msg = msg.WithContent("already playing")
 			return nil
 		}
 
@@ -31,7 +31,7 @@ var Resume = bot.Command{
 			return fmt.Errorf("failed to resume: %w", err)
 		}
 
-		msg.SetContent("resumed")
+		*msg = msg.WithContent("resumed")
 		return nil
 	},
 }

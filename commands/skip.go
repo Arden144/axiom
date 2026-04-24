@@ -13,11 +13,11 @@ var Skip = bot.Command{
 		Name:        "skip",
 		Description: "skip",
 	},
-	Handler: func(ctx context.Context, e bot.CommandEvent, msg *discord.MessageUpdateBuilder) error {
+	Handler: func(ctx context.Context, e bot.CommandEvent, msg *discord.MessageUpdate) error {
 		player := bot.GetPlayer(*e.GuildID())
 
 		if !player.Playing() {
-			msg.SetContent("nothing to skip")
+			*msg = msg.WithContent("nothing to skip")
 			return nil
 		}
 
@@ -25,7 +25,7 @@ var Skip = bot.Command{
 			return fmt.Errorf("failed to play next: %w", err)
 		}
 
-		msg.SetContent("skipped")
+		*msg = msg.WithContent("skipped")
 		return nil
 	},
 }

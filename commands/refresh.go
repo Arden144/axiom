@@ -21,18 +21,18 @@ var Refresh = bot.Command{
 			},
 		},
 	},
-	Handler: func(ctx context.Context, e bot.CommandEvent, msg *discord.MessageUpdateBuilder) error {
+	Handler: func(ctx context.Context, e bot.CommandEvent, msg *discord.MessageUpdate) error {
 		guildIDString := e.SlashCommandInteractionData().String("guildid")
 		guildID, err := snowflake.Parse(guildIDString)
 		if err != nil {
-			msg.SetContent("Not a valid Guild ID.")
+			*msg = msg.WithContent("Not a valid Guild ID.")
 			return nil
 		}
 
 		util.ClearCommands(guildID)
 		util.AddCommands(guildID, Play, PlayLink, Skip, Disconnect, Pause, Resume)
 
-		msg.SetContent("Done.")
+		*msg = msg.WithContent("Done.")
 		return nil
 	},
 }

@@ -23,13 +23,13 @@ var PlayLink = bot.Command{
 			},
 		},
 	},
-	Handler: func(ctx context.Context, e bot.CommandEvent, msg *discord.MessageUpdateBuilder) error {
+	Handler: func(ctx context.Context, e bot.CommandEvent, msg *discord.MessageUpdate) error {
 		url := e.SlashCommandInteractionData().String("url")
 		player := bot.GetPlayer(*e.GuildID())
 
-		voice, ok := bot.Client.Caches().VoiceState(*e.GuildID(), e.User().ID)
+		voice, ok := bot.Client.Caches.VoiceState(*e.GuildID(), e.User().ID)
 		if !ok {
-			msg.SetContent("Not in a voice channel")
+			*msg = msg.WithContent("Not in a voice channel")
 			return nil
 		}
 
@@ -41,7 +41,7 @@ var PlayLink = bot.Command{
 
 		track, err := player.ResolveUrl(ctx, url)
 		if err == music.ErrNotFound {
-			msg.SetContent("not found")
+			*msg = msg.WithContent("not found")
 			return nil
 		} else if err != nil {
 			return fmt.Errorf("failed to resolve youtube url: %w", err)
@@ -50,12 +50,12 @@ var PlayLink = bot.Command{
 		if player.Playing() {
 			length := player.Track().Info.Length - player.Position() + player.Remaining()
 			player.Enqueue(track)
-			msg.SetEmbeds(embeds.Queue(track.Info, length))
+			*msg = msg.WithEmbeds(embeds.Queue(track.Info, length))
 		} else {
 			if err := player.Update(ctx, lavalink.WithTrack(track)); err != nil {
 				return fmt.Errorf("failed to play: %w", err)
 			}
-			msg.SetEmbeds(embeds.Play(track.Info))
+			*msg = msg.WithEmbeds(embeds.Play(track.Info))
 		}
 
 		msg.AddActionRow(discord.NewButton(discord.ButtonStylePrimary, "⏯️", "toggle", "", 0))

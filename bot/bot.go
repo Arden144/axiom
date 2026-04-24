@@ -17,7 +17,7 @@ import (
 )
 
 var (
-	Client   bot.Client
+	Client   *bot.Client
 	Link     disgolink.Client
 	Ctx      = context.Background()
 	Commands = make(map[string]Command)
@@ -44,7 +44,7 @@ func init() {
 		log.L.Fatal("failed to configure bot: ", zap.Error(err))
 	}
 
-	Link = disgolink.New(Client.ApplicationID(),
+	Link = disgolink.New(Client.ApplicationID,
 		disgolink.WithListenerFunc(OnTrackEnd),
 	)
 
